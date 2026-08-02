@@ -2,9 +2,17 @@
 // prototype round). ChatGPTMark is the real OpenAI logo — user explicitly
 // authorized real branding for this class project (see HANDOFF.md).
 
-export function ClaudeMark({ className, size = 24 }: { className?: string; size?: number }) {
+export function ClaudeMark({
+  className,
+  size = 24,
+  style,
+}: {
+  className?: string;
+  size?: number;
+  style?: React.CSSProperties;
+}) {
   return (
-    <svg className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={style}>
       <path
         fill="currentColor"
         d="M12 1.5c.5 0 .9.4.9.9l.35 6.1 1.2-1.2a.9.9 0 0 1 1.3 1.3l-1.2 1.2 6.1.35a.9.9 0 0 1 0 1.8l-6.1.35 1.2 1.2a.9.9 0 0 1-1.3 1.3l-1.2-1.2-.35 6.1a.9.9 0 0 1-1.8 0l-.35-6.1-1.2 1.2a.9.9 0 0 1-1.3-1.3l1.2-1.2-6.1-.35a.9.9 0 0 1 0-1.8l6.1-.35-1.2-1.2a.9.9 0 0 1 1.3-1.3l1.2 1.2.35-6.1c0-.5.4-.9.9-.9z"
