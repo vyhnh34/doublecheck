@@ -12,7 +12,7 @@ export default function ExitPage() {
   const content = <DoubleCheckSettingsPage />;
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--ios-background-secondary)" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
       <DeviceSwitcher />
       <DeviceStage
         mac={

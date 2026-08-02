@@ -58,7 +58,7 @@ export function ProtectSheet({
                   &ldquo;{match?.text}&rdquo;
                 </p>
                 <p className="mt-1 text-[13px]" style={{ color: "var(--ios-label-secondary)" }}>
-                  {match?.subItemLabel} — this looks like it could identify you.
+                  {match?.subItemLabel} could identify you.
                 </p>
               </div>
             </div>

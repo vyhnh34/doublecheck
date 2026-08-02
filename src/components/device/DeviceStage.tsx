@@ -17,7 +17,7 @@ export function DeviceStage({ mac, iphone }: DeviceStageProps) {
   const { deviceMode } = useDoubleCheck();
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center p-6">
+    <div className="flex h-dvh w-full items-center justify-center overflow-hidden p-6">
       <div className={deviceMode === "mac" ? "block w-full" : "hidden"}>{mac}</div>
       <div className={deviceMode === "iphone" ? "block" : "hidden"}>{iphone}</div>
     </div>

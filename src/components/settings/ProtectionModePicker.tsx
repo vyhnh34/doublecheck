@@ -7,13 +7,13 @@ const OPTIONS: { mode: ProtectionMode; title: string; description: string; icon:
   {
     mode: "review",
     title: "Review each time",
-    description: "Highlight what's detected — you tap to protect it.",
+    description: "Highlight what's detected. Tap to protect it.",
     icon: MousePointerClick,
   },
   {
     mode: "auto",
     title: "Auto-protect",
-    description: "Protect detected info automatically as you type, no tapping needed.",
+    description: "Protect detected info automatically as you type.",
     icon: Zap,
   },
 ];

@@ -33,7 +33,7 @@ function PrivacySecurityDetail({ onOpenDoubleCheck }: { onOpenDoubleCheck: () =>
       <SettingsGroup>
         <SettingsRow
           icon={<ShieldCheck size={17} color="#fff" strokeWidth={2.2} />}
-          iconBg="linear-gradient(135deg, #34c759, #248a3d)"
+          iconBg="linear-gradient(135deg, #8e8e93, #48484a)"
           title="DoubleCheck"
           subtitle="Protect sensitive info as you type"
           isNew
@@ -103,7 +103,7 @@ export default function EnterPage() {
   ];
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--ios-background-secondary)" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
       <DeviceSwitcher />
       <DeviceStage
         mac={

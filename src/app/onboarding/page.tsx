@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { ShieldCheck, Hand } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
 import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
@@ -55,19 +54,11 @@ function Step1Explain() {
 
   return (
     <div className="flex flex-col items-center px-6 pt-8 text-center">
-      <span
-        className="mb-5 grid h-16 w-16 place-items-center rounded-[18px]"
-        style={{ background: "linear-gradient(135deg, #34c759, #248a3d)" }}
-      >
-        <ShieldCheck size={32} color="#fff" strokeWidth={2} />
-      </span>
-
       <h1 className="text-[22px] font-bold" style={{ color: "var(--ios-label)" }}>
-        Meet Protect
+        Meet DoubleCheck
       </h1>
       <p className="mt-2 max-w-[300px] text-[15px] leading-snug" style={{ color: "var(--ios-label-secondary)" }}>
-        DoubleCheck watches what you type and offers to Protect personal details before you send them —
-        right on your device.
+        DoubleCheck watches what you type and offers to protect personal details before you send them.
       </p>
 
       <div
@@ -132,8 +123,8 @@ function Step1Explain() {
       </div>
 
       <p className="mt-4 max-w-[300px] text-[12.5px] leading-snug" style={{ color: "var(--ios-label-tertiary)" }}>
-        This process is also called <em className="not-italic font-medium">anonymization</em> — swapping
-        sensitive details for a placeholder before anything leaves your device.
+        This is also called <em className="not-italic font-medium">anonymization</em>: swapping sensitive
+        details for a placeholder before anything leaves your device.
       </p>
     </div>
   );
@@ -142,19 +133,11 @@ function Step1Explain() {
 function Step3LiveExplainer() {
   return (
     <div className="flex flex-col items-center px-6 pt-8 text-center">
-      <span
-        className="mb-5 grid h-16 w-16 place-items-center rounded-[18px]"
-        style={{ background: "linear-gradient(135deg, #0a84ff, #005ecb)" }}
-      >
-        <Hand size={30} color="#fff" strokeWidth={2} />
-      </span>
-
       <h1 className="text-[22px] font-bold" style={{ color: "var(--ios-label)" }}>
         Here&apos;s what happens live
       </h1>
       <p className="mt-2 max-w-[300px] text-[15px] leading-snug" style={{ color: "var(--ios-label-secondary)" }}>
-        When DoubleCheck spots one of these while you type, it&apos;ll highlight it. Tap the highlight to
-        protect it.
+        Tap a highlight to protect it.
       </p>
 
       <div
@@ -184,7 +167,7 @@ function Step3LiveExplainer() {
         </motion.div>
       </div>
 
-      <InfoNote>Everything is scanned on-device — nothing is sent anywhere unless you protect it and choose to send.</InfoNote>
+      <InfoNote>Everything is scanned on-device.</InfoNote>
 
       <div className="mt-6 w-full max-w-[320px] text-left">
         <h2 className="mb-2 px-1 text-[13px] font-semibold uppercase tracking-wide" style={{ color: "var(--ios-label-secondary)" }}>
@@ -272,7 +255,7 @@ export default function OnboardingPage() {
   );
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--ios-background-secondary)" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
       <DeviceSwitcher />
       <DeviceStage
         mac={

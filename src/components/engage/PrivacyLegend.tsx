@@ -17,11 +17,11 @@ export function PrivacyLegend({ onDismiss }: { onDismiss: () => void }) {
         <div className="flex flex-col gap-1.5 text-[12.5px]" style={{ color: "var(--ios-label-secondary)" }}>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ background: "var(--ios-red)" }} />
-            Detected — tap to protect it
+            Detected: tap to protect it
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ background: "var(--ios-green)" }} />
-            Protected — safe to send
+            Protected: safe to send
           </span>
         </div>
         <button onClick={onDismiss} className="mt-0.5 flex-shrink-0 opacity-60 hover:opacity-100" aria-label="Dismiss legend">

@@ -193,7 +193,7 @@ export function AIChatScreen({
           </div>
         </div>
         <p className="mt-2 px-2 pb-2 text-center text-[11.5px]" style={{ color: t.textMuted }}>
-          {appName} can make mistakes. This is a prototype — replies are simulated.
+          {appName} can make mistakes. Replies are simulated.
         </p>
       </div>
 

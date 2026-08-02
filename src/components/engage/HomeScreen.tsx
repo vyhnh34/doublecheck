@@ -9,7 +9,7 @@ export function HomeScreen({ onOpenApp, enabledIds }: { onOpenApp: (id: string) 
 
   return (
     <div
-      className="flex h-full flex-col px-5 pb-3 pt-8"
+      className="flex h-full flex-col px-5 pb-3 pt-14"
       style={{ background: "linear-gradient(160deg, #4c6a92 0%, #26374f 55%, #131c2b 100%)" }}
     >
       <div className="grid grid-cols-4 gap-x-4 gap-y-6">

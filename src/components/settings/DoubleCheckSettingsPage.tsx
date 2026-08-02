@@ -31,7 +31,7 @@ export function DoubleCheckSettingsPage() {
         <div className="flex items-center gap-3 px-3.5 py-3">
           <span
             className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-[9px]"
-            style={{ background: "linear-gradient(135deg, #34c759, #248a3d)" }}
+            style={{ background: "linear-gradient(135deg, #8e8e93, #48484a)" }}
           >
             <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
           </span>

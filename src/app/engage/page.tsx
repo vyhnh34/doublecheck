@@ -19,9 +19,9 @@ import { APPS } from "@/data/apps";
 import { detect, protectAllMatches, type Match } from "@/lib/detection";
 
 const REPLIES = [
-  "Got it — thanks for letting me know!",
-  "Sounds good, I've made a note of that.",
-  "Thanks for sharing — noted.",
+  "Got it, thanks for letting me know!",
+  "Sounds good, noted.",
+  "Thanks for sharing.",
 ];
 
 type ChatAppId = "messages" | "claude" | "chatgpt";
@@ -84,7 +84,7 @@ export default function EngagePage() {
   /** Applies one match's placeholder to whichever screen is currently open. Used
    * both by the manual sheet/popover "Protect" button and by auto-protect mode. */
   const protectMatch = (match: Match, targetView: View = view) => {
-    const placeholder = `[Protected — ${match.categoryLabel}]`;
+    const placeholder = `[Protected: ${match.categoryLabel}]`;
     const apply = (text: string) => {
       if (text.slice(match.start, match.end) !== match.text) return text;
       return text.slice(0, match.start) + placeholder + text.slice(match.end);
@@ -170,7 +170,7 @@ export default function EngagePage() {
           {showReminder && (
             <div className="flex items-start gap-2.5 px-3.5 py-2.5" style={{ background: "var(--ios-blue)" }}>
               <p className="flex-1 text-[12.5px] leading-snug text-white">
-                Don&apos;t forget — DoubleCheck can protect sensitive info here. Set it up in Settings.
+                DoubleCheck can protect sensitive info here. Set it up in Settings.
               </p>
               <button onClick={dismissReminder} aria-label="Dismiss reminder">
                 <X size={15} color="#fff" />
@@ -254,7 +254,7 @@ export default function EngagePage() {
   );
 
   return (
-    <main className="min-h-screen pb-10" style={{ background: "#000" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
       <DeviceSwitcher />
       <DeviceStage
         mac={
@@ -273,6 +273,9 @@ export default function EngagePage() {
             title={titleFor(view)}
             onSwipeHome={view === "home" ? undefined : () => setView("home")}
             scrollable={view === "home"}
+            hideTitleBar={view === "home"}
+            fullBleed={view === "home"}
+            statusBarTint={view === "home" ? "light" : "dark"}
           >
             {contentFor("iphone")}
           </IPhoneShell>

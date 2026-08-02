@@ -83,9 +83,12 @@ function NotificationBanner({
 
 function IPhoneLockScreen({ onTap, onDismiss, dismissed }: { onTap: () => void; onDismiss: () => void; dismissed: boolean }) {
   return (
-    <div className="mx-auto w-full max-w-[390px] min-[900px]:rounded-[54px] min-[900px]:border-[10px] min-[900px]:shadow-2xl" style={{ borderColor: "#111" }}>
+    <div
+      className="mx-auto min-[900px]:rounded-[54px] min-[900px]:border-[10px] min-[900px]:shadow-2xl"
+      style={{ borderColor: "#111", height: "min(844px, calc(100dvh - 3rem))", aspectRatio: "390 / 844" }}
+    >
       <div
-        className="relative flex h-[780px] w-full flex-col overflow-hidden min-[900px]:h-[844px] min-[900px]:rounded-[44px]"
+        className="relative flex h-full w-full flex-col overflow-hidden min-[900px]:rounded-[44px]"
         style={{ background: "linear-gradient(160deg, #3a4a6b 0%, #1b2540 45%, #0c1220 100%)" }}
       >
         <div className="flex items-center justify-between px-7 pt-2.5 text-[15px] font-semibold text-white">
@@ -148,7 +151,7 @@ export default function EnticePage() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: "#000" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "#000" }}>
       <DeviceSwitcher />
       <DeviceStage
         mac={<MacDesktop onTap={handleTap} onDismiss={handleDismiss} dismissed={dismissed} />}

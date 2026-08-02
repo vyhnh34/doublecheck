@@ -60,7 +60,7 @@ export function MessageThread({
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center px-8 text-center">
             <p className="text-[13.5px]" style={{ color: "var(--ios-label-tertiary)" }}>
-              {emptyStateText ?? "Say hello — try typing something with your name, a phone number, or an address."}
+              {emptyStateText ?? "Try typing your name, phone number, or address."}
             </p>
           </div>
         )}
