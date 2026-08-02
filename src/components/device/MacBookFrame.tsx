@@ -45,12 +45,15 @@ export function MacBookFrame({ children, appName = "Finder", fillScreen = false,
         {/* Screen content */}
         <div className="relative">
           <div
-            className={fillScreen ? "" : "flex items-start justify-center p-6"}
-            style={{ background: fillScreen ? undefined : "linear-gradient(160deg, #c7d3e0 0%, #9fb0c4 100%)" }}
+            className={fillScreen ? "h-full" : "flex items-start justify-center p-6"}
+            style={{
+              background: fillScreen ? undefined : "linear-gradient(160deg, #c7d3e0 0%, #9fb0c4 100%)",
+              height: fillScreen ? "min(620px, calc(100dvh - 8rem))" : undefined,
+            }}
           >
             {children}
           </div>
-          {dock && <div className="absolute inset-x-0 bottom-3 z-30 flex justify-center">{dock}</div>}
+          {dock && <div className="absolute inset-y-0 right-3 z-30 flex items-center">{dock}</div>}
         </div>
       </div>
     </div>

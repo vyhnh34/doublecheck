@@ -243,13 +243,8 @@ export default function EngagePage() {
   const macDock = <MacDock activeId={view} onOpenApp={openApp} />;
   const macDesktop = (
     <div
-      className="mx-auto rounded-[10px]"
-      style={{
-        width: "100%",
-        maxWidth: 880,
-        height: 620,
-        background: "linear-gradient(160deg, #4c6a92 0%, #26374f 55%, #131c2b 100%)",
-      }}
+      className="h-full w-full"
+      style={{ background: "linear-gradient(160deg, #4c6a92 0%, #26374f 55%, #131c2b 100%)" }}
     />
   );
 

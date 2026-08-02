@@ -14,7 +14,7 @@ const MAC_DOCK_IDS = [...DOCK_IDS, "settings"];
 export function MacDock({ activeId, onOpenApp }: { activeId: string; onOpenApp: (id: string) => void }) {
   return (
     <div
-      className="flex items-end gap-2.5 rounded-[20px] px-3 pb-2.5 pt-2"
+      className="flex flex-col items-center gap-2.5 rounded-[20px] px-2 py-3"
       style={{
         background: "rgba(255,255,255,0.35)",
         backdropFilter: "blur(28px) saturate(180%)",
@@ -26,13 +26,13 @@ export function MacDock({ activeId, onOpenApp }: { activeId: string; onOpenApp: 
         <button
           key={id}
           onClick={() => onOpenApp(id)}
-          className="flex flex-col items-center gap-1 transition-transform hover:-translate-y-1.5 active:scale-95"
+          className="relative flex items-center transition-transform hover:-translate-x-1.5 active:scale-95"
         >
-          <AppIcon appId={id} size={48} />
           <span
-            className="h-[3px] w-[3px] rounded-full"
+            className="absolute -left-1.5 top-1/2 h-[3px] w-[3px] -translate-y-1/2 rounded-full"
             style={{ background: activeId === id ? "#3c3c3c" : "transparent" }}
           />
+          <AppIcon appId={id} size={48} />
         </button>
       ))}
     </div>

@@ -16,7 +16,7 @@ export interface AppDef {
 }
 
 export const APPS: AppDef[] = [
-  { id: "messages", name: "Messages", glyph: "messages", color: "linear-gradient(135deg, #34c759, #248a3d)", kind: "messages" },
+  { id: "messages", name: "Messages", glyph: "messages", color: "linear-gradient(135deg, #34c759, #248a3d)", iconImage: "/app-icons/messages.png", kind: "messages" },
   { id: "browser", name: "Safari", glyph: "browser", color: "linear-gradient(135deg, #5ac8fa, #007aff)", iconImage: "/app-icons/safari.png", kind: "browser" },
   {
     id: "claude",

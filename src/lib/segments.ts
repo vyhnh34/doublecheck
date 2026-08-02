@@ -1,6 +1,6 @@
 import type { Match } from "./detection";
 
-export const PLACEHOLDER_RE = /\[Protected(?: — [^\]]+)?\]/g;
+export const PLACEHOLDER_RE = /\[Protected(?::\s[^\]]+)?\]/g;
 
 export interface Segment {
   text: string;
