@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ─────────────────────────  Design tokens  ───────────────────────────── */
+:root {
+  --font-sf: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    system-ui, sans-serif;
+
+  /* iOS — light */
+  --ios-background: #ffffff;
+  --ios-background-secondary: #f2f2f7;
+  --ios-background-tertiary: #ffffff;
+  --ios-label: #000000;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-blue: #007aff;
+  --ios-red: #ff3b30;
+  --ios-green: #34c759;
+  --ios-orange: #ff9500;
+  --ios-yellow: #ffcc00;
+  --ios-purple: #af52de;
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-card: #ffffff;
+  --ios-fill: rgba(120, 120, 128, 0.12);
+
+  /* macOS — light */
+  --mac-window-bg: #ececec;
+  --mac-sidebar-bg: #f5f5f5;
+  --mac-detail-bg: #ffffff;
+  --mac-label: #000000;
+  --mac-label-secondary: rgba(0, 0, 0, 0.55);
+  --mac-separator: rgba(0, 0, 0, 0.1);
+  --mac-red: #ff5f57;
+  --mac-yellow: #ffbd2e;
+  --mac-green: #28c840;
+  --mac-selected: #cfcfd4;
+
+  /* shared semantic */
+  --protect-detected: var(--ios-red);
+  --protect-protected: var(--ios-green);
+
+  --radius-ios-card: 14px;
+  --radius-ios-card-lg: 20px;
+  --radius-ios-sheet: 20px;
+  --radius-mac-window: 10px;
+  --radius-pill: 999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ios-background: #000000;
+    --ios-background-secondary: #1c1c1e;
+    --ios-background-tertiary: #2c2c2e;
+    --ios-label: #ffffff;
+    --ios-label-secondary: rgba(235, 235, 245, 0.6);
+    --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+    --ios-blue: #0a84ff;
+    --ios-red: #ff453a;
+    --ios-green: #32d74b;
+    --ios-orange: #ff9f0a;
+    --ios-yellow: #ffd60a;
+    --ios-purple: #bf5af2;
+    --ios-separator: rgba(84, 84, 88, 0.6);
+    --ios-card: #1c1c1e;
+    --ios-fill: rgba(120, 120, 128, 0.24);
+
+    --mac-window-bg: #282828;
+    --mac-sidebar-bg: #262626;
+    --mac-detail-bg: #1e1e1e;
+    --mac-label: #ffffff;
+    --mac-label-secondary: rgba(255, 255, 255, 0.55);
+    --mac-separator: rgba(255, 255, 255, 0.12);
+    --mac-selected: #3c3c3f;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ios-background: #000000;
+  --ios-background-secondary: #1c1c1e;
+  --ios-background-tertiary: #2c2c2e;
+  --ios-label: #ffffff;
+  --ios-label-secondary: rgba(235, 235, 245, 0.6);
+  --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+  --ios-blue: #0a84ff;
+  --ios-red: #ff453a;
+  --ios-green: #32d74b;
+  --ios-orange: #ff9f0a;
+  --ios-yellow: #ffd60a;
+  --ios-purple: #bf5af2;
+  --ios-separator: rgba(84, 84, 88, 0.6);
+  --ios-card: #1c1c1e;
+  --ios-fill: rgba(120, 120, 128, 0.24);
+
+  --mac-window-bg: #282828;
+  --mac-sidebar-bg: #262626;
+  --mac-detail-bg: #1e1e1e;
+  --mac-label: #ffffff;
+  --mac-label-secondary: rgba(255, 255, 255, 0.55);
+  --mac-separator: rgba(255, 255, 255, 0.12);
+  --mac-selected: #3c3c3f;
+}
+
+:root[data-theme="light"] {
+  --ios-background: #ffffff;
+  --ios-background-secondary: #f2f2f7;
+  --ios-background-tertiary: #ffffff;
+  --ios-label: #000000;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-blue: #007aff;
+  --ios-red: #ff3b30;
+  --ios-green: #34c759;
+  --ios-orange: #ff9500;
+  --ios-yellow: #ffcc00;
+  --ios-purple: #af52de;
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-card: #ffffff;
+  --ios-fill: rgba(120, 120, 128, 0.12);
+
+  --mac-window-bg: #ececec;
+  --mac-sidebar-bg: #f5f5f5;
+  --mac-detail-bg: #ffffff;
+  --mac-label: #000000;
+  --mac-label-secondary: rgba(0, 0, 0, 0.55);
+  --mac-separator: rgba(0, 0, 0, 0.1);
+  --mac-selected: #cfcfd4;
+}
+
+@theme inline {
+  --font-sans: var(--font-sf);
+
+  --color-ios-background: var(--ios-background);
+  --color-ios-background-secondary: var(--ios-background-secondary);
+  --color-ios-background-tertiary: var(--ios-background-tertiary);
+  --color-ios-label: var(--ios-label);
+  --color-ios-label-secondary: var(--ios-label-secondary);
+  --color-ios-label-tertiary: var(--ios-label-tertiary);
+  --color-ios-blue: var(--ios-blue);
+  --color-ios-red: var(--ios-red);
+  --color-ios-green: var(--ios-green);
+  --color-ios-orange: var(--ios-orange);
+  --color-ios-yellow: var(--ios-yellow);
+  --color-ios-purple: var(--ios-purple);
+  --color-ios-separator: var(--ios-separator);
+  --color-ios-card: var(--ios-card);
+  --color-ios-fill: var(--ios-fill);
+
+  --color-mac-window: var(--mac-window-bg);
+  --color-mac-sidebar: var(--mac-sidebar-bg);
+  --color-mac-detail: var(--mac-detail-bg);
+  --color-mac-label: var(--mac-label);
+  --color-mac-label-secondary: var(--mac-label-secondary);
+  --color-mac-separator: var(--mac-separator);
+  --color-mac-red: var(--mac-red);
+  --color-mac-yellow: var(--mac-yellow);
+  --color-mac-green: var(--mac-green);
+  --color-mac-selected: var(--mac-selected);
+
+  --radius-ios-card: var(--radius-ios-card);
+  --radius-ios-card-lg: var(--radius-ios-card-lg);
+  --radius-ios-sheet: var(--radius-ios-sheet);
+  --radius-mac-window: var(--radius-mac-window);
+  --radius-pill: var(--radius-pill);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sf);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: #000;
+  overscroll-behavior: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ios-fill);
+  border-radius: 4px;
+}
