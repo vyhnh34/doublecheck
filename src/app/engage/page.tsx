@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
-import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
+import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { MacWindow } from "@/components/device/MacWindow";
 import { MacBookFrame } from "@/components/device/MacBookFrame";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
@@ -281,7 +281,7 @@ export default function EngagePage() {
 
   return (
     <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
-      <DeviceSwitcher />
+      <VersionSwitcher />
       <DeviceStage
         mac={
           view === "home" ? (

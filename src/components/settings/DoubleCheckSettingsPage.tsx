@@ -28,18 +28,18 @@ export function DoubleCheckSettingsPage() {
       </h1>
 
       <div className="mb-2 overflow-hidden rounded-[var(--radius-ios-card)]" style={{ background: "var(--ios-card)" }}>
-        <div className="flex items-center gap-3 px-3.5 py-3">
+        <div className="flex items-start gap-3 px-3.5 py-3">
           <span
             className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-[9px]"
-            style={{ background: "rgba(52,199,89,0.15)" }}
+            style={{ background: "linear-gradient(135deg, rgba(52,199,89,0.28), rgba(52,199,89,0.1))" }}
           >
             <DoubleCheckMark size={16} style={{ color: "#248a3d" }} />
           </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-medium" style={{ color: "var(--ios-label)" }}>
+          <span className="min-w-0 flex-1 pt-0.5">
+            <span className="block text-[15px] font-medium leading-tight" style={{ color: "var(--ios-label)" }}>
               DoubleCheck
             </span>
-            <span className="block text-[12.5px]" style={{ color: "var(--ios-label-secondary)" }}>
+            <span className="mt-0.5 block text-[12.5px] leading-snug" style={{ color: "var(--ios-label-secondary)" }}>
               Protect sensitive info as you type
             </span>
           </span>

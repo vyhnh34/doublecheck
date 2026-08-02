@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Settings, Signal, Wifi, BatteryFull, X, Lock } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
-import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
+import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { useState } from "react";
 
 function NotificationBanner({
@@ -152,7 +152,7 @@ export default function EnticePage() {
 
   return (
     <main className="h-dvh overflow-hidden" style={{ background: "#000" }}>
-      <DeviceSwitcher />
+      <VersionSwitcher />
       <DeviceStage
         mac={<MacDesktop onTap={handleTap} onDismiss={handleDismiss} dismissed={dismissed} />}
         iphone={<IPhoneLockScreen onTap={handleTap} onDismiss={handleDismiss} dismissed={dismissed} />}

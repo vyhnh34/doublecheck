@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
-import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
+import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { MacWindow, type MacSidebarItem } from "@/components/device/MacWindow";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
 import { SettingsRow } from "@/components/settings/SettingsRow";
@@ -34,7 +34,7 @@ function PrivacySecurityDetail({ onOpenDoubleCheck }: { onOpenDoubleCheck: () =>
       <SettingsGroup>
         <SettingsRow
           icon={<DoubleCheckMark size={16} style={{ color: "#248a3d" }} />}
-          iconBg="rgba(52,199,89,0.15)"
+          iconBg="linear-gradient(135deg, rgba(52,199,89,0.28), rgba(52,199,89,0.1))"
           title="DoubleCheck"
           subtitle="Protect sensitive info as you type"
           isNew
@@ -105,7 +105,7 @@ export default function EnterPage() {
 
   return (
     <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
-      <DeviceSwitcher />
+      <VersionSwitcher />
       <DeviceStage
         mac={
           <MacWindow
@@ -118,7 +118,7 @@ export default function EnterPage() {
           </MacWindow>
         }
         iphone={
-          <IPhoneShell title="Privacy & Security" onBack={() => router.back()}>
+          <IPhoneShell title="Privacy & Security" onBack={() => router.back()} onSwipeHome={() => router.push("/engage")}>
             <PrivacySecurityDetail onOpenDoubleCheck={handleOpenDoubleCheck} />
           </IPhoneShell>
         }

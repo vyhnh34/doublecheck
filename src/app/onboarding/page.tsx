@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
-import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
+import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { MacWindow } from "@/components/device/MacWindow";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
 import { CategoryAccordion, InfoNote } from "@/components/onboarding/CategoryAccordion";
@@ -256,7 +256,7 @@ export default function OnboardingPage() {
 
   return (
     <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
-      <DeviceSwitcher />
+      <VersionSwitcher />
       <DeviceStage
         mac={
           <MacWindow windowTitle="DoubleCheck Setup" onBack={handleBack} onClose={() => router.push("/engage")}>
@@ -264,7 +264,7 @@ export default function OnboardingPage() {
           </MacWindow>
         }
         iphone={
-          <IPhoneShell title="DoubleCheck" onBack={handleBack}>
+          <IPhoneShell title="DoubleCheck" onBack={handleBack} onSwipeHome={() => router.push("/engage")}>
             {content}
           </IPhoneShell>
         }

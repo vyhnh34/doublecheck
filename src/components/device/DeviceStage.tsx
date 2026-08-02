@@ -9,8 +9,8 @@ interface DeviceStageProps {
 }
 
 /**
- * Renders both device chrome trees at once so the DeviceSwitcher toggle is an
- * instant CSS swap, not a remount — any lifted state on the page stays intact
+ * Renders both device chrome trees at once so the VersionSwitcher's Device
+ * toggle is an instant CSS swap, not a remount — any lifted state on the page stays intact
  * because both `mac` and `iphone` are built from the same page-level state.
  */
 export function DeviceStage({ mac, iphone }: DeviceStageProps) {

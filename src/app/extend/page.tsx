@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { DeviceStage } from "@/components/device/DeviceStage";
-import { DeviceSwitcher } from "@/components/device/DeviceSwitcher";
+import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { MacWindow } from "@/components/device/MacWindow";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
 import { DoubleCheckSettingsPage } from "@/components/settings/DoubleCheckSettingsPage";
@@ -13,7 +13,7 @@ export default function ExtendPage() {
 
   return (
     <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
-      <DeviceSwitcher />
+      <VersionSwitcher />
       <DeviceStage
         mac={
           <MacWindow windowTitle="DoubleCheck" onBack={() => router.back()} onClose={() => router.push("/engage")}>
@@ -21,7 +21,7 @@ export default function ExtendPage() {
           </MacWindow>
         }
         iphone={
-          <IPhoneShell title="DoubleCheck" onBack={() => router.back()}>
+          <IPhoneShell title="DoubleCheck" onBack={() => router.back()} onSwipeHome={() => router.push("/engage")}>
             {content}
           </IPhoneShell>
         }
