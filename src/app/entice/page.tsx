@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Settings, Signal, Wifi, BatteryFull, X, Lock } from "lucide-react";
+import Image from "next/image";
+import { Signal, Wifi, BatteryFull, X, Lock } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
 import { VersionSwitcher } from "@/components/device/VersionSwitcher";
@@ -35,11 +36,8 @@ function NotificationBanner({
         boxShadow: "0 8px 30px rgba(0,0,0,0.18)",
       }}
     >
-      <span
-        className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[9px]"
-        style={{ background: "linear-gradient(135deg, #8e8e93, #48484a)" }}
-      >
-        <Settings size={20} color="#fff" strokeWidth={2} />
+      <span className="relative grid h-9 w-9 flex-shrink-0 place-items-center overflow-hidden rounded-[9px]">
+        <Image src="/app-icons/settings.png" alt="Settings" width={36} height={36} className="h-full w-full object-cover" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-baseline justify-between gap-2">
