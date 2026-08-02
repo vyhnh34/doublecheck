@@ -16,7 +16,7 @@ export default function ExitPage() {
       <DeviceSwitcher />
       <DeviceStage
         mac={
-          <MacWindow windowTitle="DoubleCheck" onBack={() => router.back()}>
+          <MacWindow windowTitle="DoubleCheck" onBack={() => router.back()} onClose={() => router.push("/engage")}>
             {content}
           </MacWindow>
         }

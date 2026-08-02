@@ -3,56 +3,46 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
-import { detect, type Match } from "@/lib/detection";
+import { detect, type Match, type SecuredMatch } from "@/lib/detection";
 import { ProtectableInput } from "./ProtectableInput";
-import { ProtectSheet } from "./ProtectSheet";
 import { PrivacyLegend } from "./PrivacyLegend";
 import { HighlightedText } from "./HighlightedText";
-import { useAutoProtect } from "./useAutoProtect";
 
 export interface ThreadMessage {
   id: string;
   role: "user" | "assistant";
   text: string;
   time: string;
+  secured?: SecuredMatch[];
 }
 
 interface MessageThreadProps {
-  variant: "iphone" | "mac";
   accentColor: string;
   bubbleRadius?: number;
   messages: ThreadMessage[];
   draft: string;
+  secured?: SecuredMatch[];
   onDraftChange: (v: string) => void;
   onSend: () => void;
-  activeMatch: Match | null;
   onMatchClick: (match: Match, rect: DOMRect) => void;
-  onProtect: () => void;
-  onDismissSheet: () => void;
-  onAutoProtect: (match: Match) => void;
   isTyping?: boolean;
   emptyStateText?: string;
 }
 
 export function MessageThread({
-  variant,
   accentColor,
   bubbleRadius = 18,
   messages,
   draft,
+  secured,
   onDraftChange,
   onSend,
-  activeMatch,
   onMatchClick,
-  onProtect,
-  onDismissSheet,
-  onAutoProtect,
   isTyping,
   emptyStateText,
 }: MessageThreadProps) {
   const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
   const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
-  useAutoProtect(draft, matches, onAutoProtect);
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
@@ -77,7 +67,11 @@ export function MessageThread({
                   borderBottomLeftRadius: m.role === "user" ? bubbleRadius : Math.min(4, bubbleRadius),
                 }}
               >
-                {m.role === "user" ? <HighlightedText text={m.text} matches={featureOn ? detect(m.text, selectedSubItemIds) : []} /> : m.text}
+                {m.role === "user" ? (
+                  <HighlightedText text={m.text} matches={featureOn ? detect(m.text, selectedSubItemIds) : []} secured={m.secured} />
+                ) : (
+                  m.text
+                )}
               </div>
               <span className="mt-1 px-1 text-[11px]" style={{ color: "var(--ios-label-tertiary)" }}>
                 {m.time}
@@ -112,6 +106,7 @@ export function MessageThread({
               value={draft}
               onChange={onDraftChange}
               matches={matches}
+              secured={secured}
               onMatchClick={onMatchClick}
               onSubmit={onSend}
               placeholder="Message"
@@ -130,8 +125,6 @@ export function MessageThread({
           Processed on this device. Nothing is sent anywhere until you choose to protect it.
         </p>
       </div>
-
-      {variant === "iphone" && <ProtectSheet match={activeMatch} onProtect={onProtect} onDismiss={onDismissSheet} />}
     </div>
   );
 }

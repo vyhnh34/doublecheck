@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import type { Match } from "@/lib/detection";
+import type { Match, SecuredMatch } from "@/lib/detection";
 import { buildSegments } from "@/lib/segments";
 
 const sharedTextStyle: CSSProperties = {
@@ -21,6 +21,7 @@ export function ProtectableInput({
   value,
   onChange,
   matches,
+  secured,
   onMatchClick,
   placeholder,
   onSubmit,
@@ -28,6 +29,7 @@ export function ProtectableInput({
   value: string;
   onChange: (v: string) => void;
   matches: Match[];
+  secured?: SecuredMatch[];
   onMatchClick: (match: Match, rect: DOMRect) => void;
   placeholder?: string;
   onSubmit?: () => void;
@@ -37,7 +39,7 @@ export function ProtectableInput({
   const spanRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
   const [hotspots, setHotspots] = useState<{ matchIndex: number; rect: { top: number; left: number; width: number; height: number } }[]>([]);
 
-  const segments = useMemo(() => buildSegments(value, matches), [value, matches]);
+  const segments = useMemo(() => buildSegments(value, matches, secured), [value, matches, secured]);
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -89,8 +91,11 @@ export function ProtectableInput({
           ) : (
             <span
               key={i}
-              className="rounded-[4px] px-1 py-[1px] text-[13.5px] font-semibold text-white"
-              style={{ background: "var(--ios-green)" }}
+              ref={(el) => {
+                if (el && seg.matchIndex !== undefined) spanRefs.current.set(seg.matchIndex, el);
+              }}
+              className="rounded-[3px]"
+              style={{ background: "rgba(52,199,89,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-green)" }}
             >
               {seg.text}
             </span>

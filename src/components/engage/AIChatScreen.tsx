@@ -3,14 +3,12 @@
 import { motion } from "framer-motion";
 import { Plus, ChevronDown, ArrowUp } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
-import { detect, type Match } from "@/lib/detection";
+import { detect, type Match, type SecuredMatch } from "@/lib/detection";
 import type { ProductTheme } from "@/data/apps";
 import { ClaudeMark, ChatGPTMark } from "@/components/icons/ProductMarks";
 import { ProtectableInput } from "./ProtectableInput";
-import { ProtectSheet } from "./ProtectSheet";
 import { PrivacyLegend } from "./PrivacyLegend";
 import { HighlightedText } from "./HighlightedText";
-import { useAutoProtect } from "./useAutoProtect";
 import type { ThreadMessage } from "./MessageThread";
 
 const THEME_TOKENS: Record<
@@ -58,41 +56,32 @@ const THEME_TOKENS: Record<
 };
 
 export function AIChatScreen({
-  variant,
   productTheme,
   appName,
   modelLabel,
   greeting,
   messages,
   draft,
+  secured,
   onDraftChange,
   onSend,
-  activeMatch,
   onMatchClick,
-  onProtect,
-  onDismissSheet,
-  onAutoProtect,
   isTyping,
 }: {
-  variant: "iphone" | "mac";
   productTheme: ProductTheme;
   appName: string;
   modelLabel: string;
   greeting: string;
   messages: ThreadMessage[];
   draft: string;
+  secured?: SecuredMatch[];
   onDraftChange: (v: string) => void;
   onSend: () => void;
-  activeMatch: Match | null;
   onMatchClick: (match: Match, rect: DOMRect) => void;
-  onProtect: () => void;
-  onDismissSheet: () => void;
-  onAutoProtect: (match: Match) => void;
   isTyping?: boolean;
 }) {
   const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
   const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
-  useAutoProtect(draft, matches, onAutoProtect);
 
   const t = THEME_TOKENS[productTheme];
   const Mark = productTheme === "claude" ? ClaudeMark : ChatGPTMark;
@@ -122,7 +111,7 @@ export function AIChatScreen({
                     className="max-w-[80%] px-3.5 py-2 text-[15px] leading-snug"
                     style={{ background: t.userBubble, color: t.text, borderRadius: 16 }}
                   >
-                    <HighlightedText text={m.text} matches={featureOn ? detect(m.text, selectedSubItemIds) : []} />
+                    <HighlightedText text={m.text} matches={featureOn ? detect(m.text, selectedSubItemIds) : []} secured={m.secured} />
                   </div>
                 ) : (
                   <p className="max-w-[85%] text-[15px] leading-relaxed" style={{ color: t.text }}>
@@ -159,6 +148,7 @@ export function AIChatScreen({
             value={draft}
             onChange={onDraftChange}
             matches={matches}
+            secured={secured}
             onMatchClick={onMatchClick}
             onSubmit={onSend}
             placeholder={`Message ${appName}`}
@@ -196,8 +186,6 @@ export function AIChatScreen({
           {appName} can make mistakes. Replies are simulated.
         </p>
       </div>
-
-      {variant === "iphone" && <ProtectSheet match={activeMatch} onProtect={onProtect} onDismiss={onDismissSheet} />}
     </div>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ShieldCheck } from "lucide-react";
 import type { Match } from "@/lib/detection";
+import { DoubleCheckMark } from "@/components/icons/DoubleCheckMark";
 
-const WIDTH = 272;
+const WIDTH = 150;
 const GAP = 8;
 
-export function ProtectPopover({
+/** Small anchored tooltip prompting to protect a newly detected match — the
+ * minimal counterpart to SecuredPopover. Used on both iPhone and Mac. */
+export function DetectedPopover({
   match,
   rect,
   onProtect,
@@ -21,8 +23,7 @@ export function ProtectPopover({
   if (!match || !rect) return null;
 
   const anchorX = rect.left + rect.width / 2;
-  const spaceBelow = window.innerHeight - rect.top - rect.height;
-  const placeAbove = spaceBelow < 180;
+  const placeAbove = rect.top > 70;
 
   const left = Math.min(Math.max(anchorX - WIDTH / 2, 12), window.innerWidth - WIDTH - 12);
   const top = placeAbove ? rect.top - GAP : rect.top + rect.height + GAP;
@@ -38,7 +39,7 @@ export function ProtectPopover({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ duration: 0.14, ease: "easeOut" }}
-          className="fixed z-50 overflow-hidden rounded-[10px] border"
+          className="fixed z-50 flex items-center gap-2.5 overflow-hidden rounded-[10px] border px-3 py-2"
           style={{
             width: WIDTH,
             left,
@@ -63,41 +64,17 @@ export function ProtectPopover({
             }}
           />
 
-          <div className="relative px-3.5 pb-3 pt-3">
-            <div className="mb-2.5 flex items-start gap-2.5">
-              <span
-                className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-[8px]"
-                style={{ background: "var(--ios-red)" }}
-              >
-                <ShieldCheck size={14} color="#fff" strokeWidth={2.4} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--ios-label-secondary)" }}>
-                  {match.categoryLabel} detected
-                </p>
-                <p className="mt-0.5 truncate text-[14px] font-medium" style={{ color: "var(--ios-label)" }}>
-                  &ldquo;{match.text}&rdquo;
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={onProtect}
-                className="flex-1 rounded-[7px] py-1.5 text-center text-[13px] font-semibold text-white transition-transform active:scale-[0.97]"
-                style={{ background: "var(--ios-green)" }}
-              >
-                Protect
-              </button>
-              <button
-                onClick={onDismiss}
-                className="rounded-[7px] px-3 py-1.5 text-center text-[13px] font-medium transition-transform active:scale-[0.97]"
-                style={{ color: "var(--ios-label-secondary)", background: "var(--ios-fill)" }}
-              >
-                Not now
-              </button>
-            </div>
-          </div>
+          <span className="flex-1 truncate text-[14px] font-medium" style={{ color: "var(--ios-label)" }}>
+            {match.subItemLabel}
+          </span>
+          <button
+            onClick={onProtect}
+            aria-label="Protect"
+            className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-full transition-transform active:scale-90"
+            style={{ background: "linear-gradient(135deg, #8e8e93, #48484a)" }}
+          >
+            <DoubleCheckMark size={13} className="text-white" />
+          </button>
         </motion.div>
       </>
     </AnimatePresence>

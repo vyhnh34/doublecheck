@@ -14,9 +14,10 @@ import { HomeScreen } from "@/components/engage/HomeScreen";
 import { MessageThread, type ThreadMessage } from "@/components/engage/MessageThread";
 import { AIChatScreen } from "@/components/engage/AIChatScreen";
 import { BrowserBar } from "@/components/engage/BrowserBar";
-import { ProtectPopover } from "@/components/engage/ProtectPopover";
+import { DetectedPopover } from "@/components/engage/DetectedPopover";
+import { SecuredPopover } from "@/components/engage/SecuredPopover";
 import { APPS } from "@/data/apps";
-import { detect, protectAllMatches, type Match } from "@/lib/detection";
+import { detect, isMatchSecured, type Match, type SecuredMatch } from "@/lib/detection";
 
 const REPLIES = [
   "Got it, thanks for letting me know!",
@@ -26,11 +27,11 @@ const REPLIES = [
 
 type ChatAppId = "messages" | "claude" | "chatgpt";
 type View = "home" | ChatAppId | "browser";
-type Variant = "iphone" | "mac";
 
 interface ThreadState {
   messages: ThreadMessage[];
   draft: string;
+  secured: SecuredMatch[];
 }
 
 interface RectSnapshot {
@@ -40,12 +41,22 @@ interface RectSnapshot {
   height: number;
 }
 
-const emptyThread = (): ThreadState => ({ messages: [], draft: "" });
+const emptyThread = (): ThreadState => ({ messages: [], draft: "", secured: [] });
+
+/** Drops leading/trailing whitespace, shifting any secured spans to match. */
+function trimWithSecured(text: string, secured: SecuredMatch[]): { text: string; secured: SecuredMatch[] } {
+  const leadingTrim = text.length - text.trimStart().length;
+  const trimmed = text.trim();
+  if (leadingTrim === 0) return { text: trimmed, secured };
+  return {
+    text: trimmed,
+    secured: secured.map((s) => ({ ...s, start: s.start - leadingTrim, end: s.end - leadingTrim })).filter((s) => s.start >= 0),
+  };
+}
 
 export default function EngagePage() {
   const router = useRouter();
-  const { enticeDismissedOnce, setEnticeDismissedOnce, deviceMode, featureOn, selectedSubItemIds, protectionMode } =
-    useDoubleCheck();
+  const { enticeDismissedOnce, setEnticeDismissedOnce, featureOn, selectedSubItemIds, protectionMode } = useDoubleCheck();
 
   const [view, setView] = useState<View>("home");
   const [threads, setThreads] = useState<Record<ChatAppId, ThreadState>>({
@@ -54,9 +65,12 @@ export default function EngagePage() {
     chatgpt: emptyThread(),
   });
   const [browserDraft, setBrowserDraft] = useState("");
+  const [browserSecured, setBrowserSecured] = useState<SecuredMatch[]>([]);
   const [submittedQuery, setSubmittedQuery] = useState<string | null>(null);
+  const [submittedSecured, setSubmittedSecured] = useState<SecuredMatch[]>([]);
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
   const [activeMatchRect, setActiveMatchRect] = useState<RectSnapshot | null>(null);
+  const [activeMatchSecured, setActiveMatchSecured] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showReminder, setShowReminder] = useState(enticeDismissedOnce);
 
@@ -72,34 +86,52 @@ export default function EngagePage() {
     }
   };
 
+  const securedFor = (targetView: View): SecuredMatch[] =>
+    targetView === "browser" ? browserSecured : isChatApp(targetView) ? threads[targetView].secured : [];
+
   const handleMatchClick = (match: Match, rect: DOMRect) => {
     setActiveMatch(match);
     setActiveMatchRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+    setActiveMatchSecured(isMatchSecured(match, securedFor(view)));
   };
   const handleDismissSheet = () => {
     setActiveMatch(null);
     setActiveMatchRect(null);
   };
 
-  /** Applies one match's placeholder to whichever screen is currently open. Used
-   * both by the manual sheet/popover "Protect" button and by auto-protect mode. */
-  const protectMatch = (match: Match, targetView: View = view) => {
-    const placeholder = `[Protected: ${match.categoryLabel}]`;
-    const apply = (text: string) => {
-      if (text.slice(match.start, match.end) !== match.text) return text;
-      return text.slice(0, match.start) + placeholder + text.slice(match.end);
-    };
-
+  /** Flags a match as secured (green highlight) without touching the text
+   * itself — used by the manual sheet/popover "Protect" button. */
+  const secureMatch = (match: Match, targetView: View = view) => {
+    const entry: SecuredMatch = { start: match.start, end: match.end, text: match.text };
     if (targetView === "browser") {
-      setBrowserDraft((prev) => apply(prev));
+      setBrowserSecured((prev) => [...prev, entry]);
     } else if (isChatApp(targetView)) {
-      setThreads((prev) => ({ ...prev, [targetView]: { ...prev[targetView], draft: apply(prev[targetView].draft) } }));
+      setThreads((prev) => ({ ...prev, [targetView]: { ...prev[targetView], secured: [...prev[targetView].secured, entry] } }));
+    }
+  };
+
+  /** Reverts a secured match back to plain detected — used by the "Secured"
+   * tooltip's undo button. */
+  const unsecureMatch = (match: Match, targetView: View = view) => {
+    const remove = (list: SecuredMatch[]) =>
+      list.filter((s) => !(s.start === match.start && s.end === match.end && s.text === match.text));
+    if (targetView === "browser") {
+      setBrowserSecured(remove);
+    } else if (isChatApp(targetView)) {
+      setThreads((prev) => ({ ...prev, [targetView]: { ...prev[targetView], secured: remove(prev[targetView].secured) } }));
     }
   };
 
   const handleProtect = () => {
     if (!activeMatch) return;
-    protectMatch(activeMatch);
+    secureMatch(activeMatch);
+    setActiveMatch(null);
+    setActiveMatchRect(null);
+  };
+
+  const handleUndo = () => {
+    if (!activeMatch) return;
+    unsecureMatch(activeMatch);
     setActiveMatch(null);
     setActiveMatchRect(null);
   };
@@ -108,23 +140,32 @@ export default function EngagePage() {
     setThreads((prev) => ({ ...prev, [appId]: { ...prev[appId], draft } }));
   };
 
-  /** Safety net: in auto-protect mode, sweep any still-unprotected matches into
-   * placeholders right before the text leaves the input (send/search), so a
-   * match sitting at the very end of the text (still "in progress" while
-   * typing) never slips through unprotected. */
-  const sweepAutoProtect = (text: string): string => {
-    if (protectionMode !== "auto" || !featureOn) return text;
+  /** In auto-protect mode, nothing is secured while typing — matches just
+   * stay highlighted red like review mode. This is the one point protection
+   * actually happens: right as the text leaves the input (send/search), every
+   * remaining unsecured match (plus anything already secured manually) is
+   * flagged secured together. */
+  const sweepAutoProtect = (text: string, secured: SecuredMatch[]): SecuredMatch[] => {
+    if (protectionMode !== "auto" || !featureOn) return secured;
     const matches = detect(text, selectedSubItemIds);
-    return protectAllMatches(text, matches);
+    const additions = matches
+      .filter((m) => !isMatchSecured(m, secured))
+      .map((m): SecuredMatch => ({ start: m.start, end: m.end, text: m.text }));
+    return [...secured, ...additions];
   };
 
   const handleSend = (appId: ChatAppId) => {
-    const text = sweepAutoProtect(threads[appId].draft).trim();
+    const sweptSecured = sweepAutoProtect(threads[appId].draft, threads[appId].secured);
+    const { text, secured } = trimWithSecured(threads[appId].draft, sweptSecured);
     if (!text) return;
     const time = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     setThreads((prev) => ({
       ...prev,
-      [appId]: { messages: [...prev[appId].messages, { id: crypto.randomUUID(), role: "user", text, time }], draft: "" },
+      [appId]: {
+        messages: [...prev[appId].messages, { id: crypto.randomUUID(), role: "user", text, time, secured }],
+        draft: "",
+        secured: [],
+      },
     }));
     setIsTyping(true);
     setTimeout(() => {
@@ -148,9 +189,11 @@ export default function EngagePage() {
   };
 
   const handleBrowserSubmit = () => {
-    const swept = sweepAutoProtect(browserDraft);
-    if (swept !== browserDraft) setBrowserDraft(swept);
-    setSubmittedQuery(swept.trim() || null);
+    const sweptSecured = sweepAutoProtect(browserDraft, browserSecured);
+    if (sweptSecured !== browserSecured) setBrowserSecured(sweptSecured);
+    const { text, secured } = trimWithSecured(browserDraft, sweptSecured);
+    setSubmittedQuery(text || null);
+    setSubmittedSecured(secured);
   };
 
   const dismissReminder = () => {
@@ -161,7 +204,7 @@ export default function EngagePage() {
   const enabledIds = ["messages", "browser", "claude", "chatgpt", "settings"];
   const homeScreen = <HomeScreen onOpenApp={openApp} enabledIds={enabledIds} />;
 
-  const chatScreen = (appId: ChatAppId, variant: Variant) => {
+  const chatScreen = (appId: ChatAppId) => {
     const app = APPS.find((a) => a.id === appId)!;
 
     if (appId === "messages") {
@@ -178,18 +221,14 @@ export default function EngagePage() {
             </div>
           )}
           <MessageThread
-            variant={variant}
             accentColor={app.accent ?? "#34c759"}
             bubbleRadius={app.bubbleRadius}
             messages={threads[appId].messages}
             draft={threads[appId].draft}
+            secured={threads[appId].secured}
             onDraftChange={(v) => setThreadDraft(appId, v)}
             onSend={() => handleSend(appId)}
-            activeMatch={view === appId ? activeMatch : null}
             onMatchClick={handleMatchClick}
-            onProtect={handleProtect}
-            onDismissSheet={handleDismissSheet}
-            onAutoProtect={(match) => protectMatch(match, appId)}
             isTyping={view === appId && isTyping}
           />
         </div>
@@ -198,42 +237,34 @@ export default function EngagePage() {
 
     return (
       <AIChatScreen
-        variant={variant}
         productTheme={app.productTheme ?? "claude"}
         appName={app.name}
         modelLabel={app.modelLabel ?? ""}
         greeting={app.greeting ?? "How can I help you today?"}
         messages={threads[appId].messages}
         draft={threads[appId].draft}
+        secured={threads[appId].secured}
         onDraftChange={(v) => setThreadDraft(appId, v)}
         onSend={() => handleSend(appId)}
-        activeMatch={view === appId ? activeMatch : null}
         onMatchClick={handleMatchClick}
-        onProtect={handleProtect}
-        onDismissSheet={handleDismissSheet}
-        onAutoProtect={(match) => protectMatch(match, appId)}
         isTyping={view === appId && isTyping}
       />
     );
   };
 
-  const browserScreen = (variant: Variant) => (
+  const browserScreen = (
     <BrowserBar
-      variant={variant}
       draft={browserDraft}
       onDraftChange={setBrowserDraft}
+      secured={browserSecured}
       onSubmit={handleBrowserSubmit}
       submittedQuery={submittedQuery}
-      activeMatch={view === "browser" ? activeMatch : null}
+      submittedSecured={submittedSecured}
       onMatchClick={handleMatchClick}
-      onProtect={handleProtect}
-      onDismissSheet={handleDismissSheet}
-      onAutoProtect={(match) => protectMatch(match, "browser")}
     />
   );
 
-  const contentFor = (variant: Variant) =>
-    view === "home" ? homeScreen : view === "browser" ? browserScreen(variant) : chatScreen(view, variant);
+  const contentFor = () => (view === "home" ? homeScreen : view === "browser" ? browserScreen : chatScreen(view));
 
   const titleFor = (v: View) => (v === "home" ? "Home" : APPS.find((a) => a.id === v)?.name ?? "Home");
 
@@ -258,8 +289,8 @@ export default function EngagePage() {
               {macDesktop}
             </MacBookFrame>
           ) : (
-            <MacWindow windowTitle={titleFor(view)} dock={macDock}>
-              {contentFor("mac")}
+            <MacWindow windowTitle={titleFor(view)} dock={macDock} onClose={() => setView("home")}>
+              {contentFor()}
             </MacWindow>
           )
         }
@@ -272,12 +303,15 @@ export default function EngagePage() {
             fullBleed={view === "home"}
             statusBarTint={view === "home" ? "light" : "dark"}
           >
-            {contentFor("iphone")}
+            {contentFor()}
           </IPhoneShell>
         }
       />
-      {deviceMode === "mac" && (
-        <ProtectPopover match={activeMatch} rect={activeMatchRect} onProtect={handleProtect} onDismiss={handleDismissSheet} />
+      {!activeMatchSecured && (
+        <DetectedPopover match={activeMatch} rect={activeMatchRect} onProtect={handleProtect} onDismiss={handleDismissSheet} />
+      )}
+      {activeMatchSecured && (
+        <SecuredPopover match={activeMatch} rect={activeMatchRect} onUndo={handleUndo} onDismiss={handleDismissSheet} />
       )}
     </main>
   );

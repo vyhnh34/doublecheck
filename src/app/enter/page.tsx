@@ -22,6 +22,7 @@ import { MacWindow, type MacSidebarItem } from "@/components/device/MacWindow";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
 import { SettingsRow } from "@/components/settings/SettingsRow";
 import { SettingsGroup } from "@/components/settings/SettingsGroup";
+import { DoubleCheckMark } from "@/components/icons/DoubleCheckMark";
 
 function PrivacySecurityDetail({ onOpenDoubleCheck }: { onOpenDoubleCheck: () => void }) {
   return (
@@ -32,8 +33,8 @@ function PrivacySecurityDetail({ onOpenDoubleCheck }: { onOpenDoubleCheck: () =>
 
       <SettingsGroup>
         <SettingsRow
-          icon={<ShieldCheck size={17} color="#fff" strokeWidth={2.2} />}
-          iconBg="linear-gradient(135deg, #8e8e93, #48484a)"
+          icon={<DoubleCheckMark size={16} style={{ color: "#248a3d" }} />}
+          iconBg="rgba(52,199,89,0.15)"
           title="DoubleCheck"
           subtitle="Protect sensitive info as you type"
           isNew
@@ -107,7 +108,12 @@ export default function EnterPage() {
       <DeviceSwitcher />
       <DeviceStage
         mac={
-          <MacWindow windowTitle="Privacy & Security" sidebarItems={macSidebar} onBack={() => router.back()}>
+          <MacWindow
+            windowTitle="Privacy & Security"
+            sidebarItems={macSidebar}
+            onBack={() => router.back()}
+            onClose={() => router.push("/engage")}
+          >
             <PrivacySecurityDetail onOpenDoubleCheck={handleOpenDoubleCheck} />
           </MacWindow>
         }

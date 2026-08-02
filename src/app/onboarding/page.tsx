@@ -104,15 +104,15 @@ function Step1Explain() {
             >
               My name is{" "}
               <span
-                className="rounded-[4px] px-1.5 py-0.5 text-[12.5px] font-semibold text-white"
-                style={{ background: "var(--ios-green)" }}
+                className="rounded-[3px] px-0.5"
+                style={{ background: "rgba(52,199,89,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-green)" }}
               >
                 Protected
               </span>{" "}
               and I live in{" "}
               <span
-                className="rounded-[4px] px-1.5 py-0.5 text-[12.5px] font-semibold text-white"
-                style={{ background: "var(--ios-green)" }}
+                className="rounded-[3px] px-0.5"
+                style={{ background: "rgba(52,199,89,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-green)" }}
               >
                 Protected
               </span>
@@ -259,7 +259,7 @@ export default function OnboardingPage() {
       <DeviceSwitcher />
       <DeviceStage
         mac={
-          <MacWindow windowTitle="DoubleCheck Setup" onBack={handleBack}>
+          <MacWindow windowTitle="DoubleCheck Setup" onBack={handleBack} onClose={() => router.push("/engage")}>
             {content}
           </MacWindow>
         }

@@ -119,15 +119,17 @@ export function detect(text: string, selectedSubItemIds: Set<string>): Match[] {
   return deduped;
 }
 
-/** Replaces every match in `text` with its "[Protected — Category]" placeholder in one pass. */
-export function protectAllMatches(text: string, matches: Match[]): string {
-  if (matches.length === 0) return text;
-  let result = "";
-  let cursor = 0;
-  for (const m of matches) {
-    result += text.slice(cursor, m.start) + `[Protected — ${m.categoryLabel}]`;
-    cursor = m.end;
-  }
-  result += text.slice(cursor);
-  return result;
+/** Marks a detected match as "secured" — the text itself is never altered;
+ * this just flags that span to render with the secured (green) highlight
+ * instead of the detected (red) one. Identified by position + exact text so
+ * it keeps tracking the same span across re-detection, but naturally falls
+ * off if an earlier edit shifts/changes the underlying text. */
+export interface SecuredMatch {
+  start: number;
+  end: number;
+  text: string;
+}
+
+export function isMatchSecured(match: Match, secured: SecuredMatch[]): boolean {
+  return secured.some((s) => s.start === match.start && s.end === match.end && s.text === match.text);
 }

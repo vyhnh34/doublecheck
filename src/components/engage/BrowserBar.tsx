@@ -2,39 +2,30 @@
 
 import { Compass, X } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
-import { detect, type Match } from "@/lib/detection";
+import { detect, type Match, type SecuredMatch } from "@/lib/detection";
 import { ProtectableInput } from "./ProtectableInput";
-import { ProtectSheet } from "./ProtectSheet";
 import { PrivacyLegend } from "./PrivacyLegend";
 import { HighlightedText } from "./HighlightedText";
-import { useAutoProtect } from "./useAutoProtect";
 
 export function BrowserBar({
-  variant,
   draft,
+  secured,
   onDraftChange,
   onSubmit,
   submittedQuery,
-  activeMatch,
+  submittedSecured,
   onMatchClick,
-  onProtect,
-  onDismissSheet,
-  onAutoProtect,
 }: {
-  variant: "iphone" | "mac";
   draft: string;
+  secured?: SecuredMatch[];
   onDraftChange: (v: string) => void;
   onSubmit: () => void;
   submittedQuery: string | null;
-  activeMatch: Match | null;
+  submittedSecured?: SecuredMatch[];
   onMatchClick: (match: Match, rect: DOMRect) => void;
-  onProtect: () => void;
-  onDismissSheet: () => void;
-  onAutoProtect: (match: Match) => void;
 }) {
   const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
   const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
-  useAutoProtect(draft, matches, onAutoProtect);
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden" style={{ background: "var(--ios-background)" }}>
@@ -49,6 +40,7 @@ export function BrowserBar({
               value={draft}
               onChange={onDraftChange}
               matches={matches}
+              secured={secured}
               onMatchClick={onMatchClick}
               onSubmit={onSubmit}
               placeholder="Search or enter website name"
@@ -67,7 +59,11 @@ export function BrowserBar({
           <div>
             <p className="mb-3 text-[13px]" style={{ color: "var(--ios-label-secondary)" }}>
               Searching for &ldquo;
-              <HighlightedText text={submittedQuery} matches={featureOn ? detect(submittedQuery, selectedSubItemIds) : []} />
+              <HighlightedText
+                text={submittedQuery}
+                matches={featureOn ? detect(submittedQuery, selectedSubItemIds) : []}
+                secured={submittedSecured}
+              />
               &rdquo;
             </p>
             {[1, 2, 3].map((i) => (
@@ -92,8 +88,6 @@ export function BrowserBar({
       <p className="px-3 pb-3 text-center text-[11.5px]" style={{ color: "var(--ios-label-tertiary)" }}>
         Processed on this device. Nothing is sent anywhere until you choose to protect it.
       </p>
-
-      {variant === "iphone" && <ProtectSheet match={activeMatch} onProtect={onProtect} onDismiss={onDismissSheet} />}
     </div>
   );
 }

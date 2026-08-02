@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
+import { DoubleCheckMark } from "@/components/icons/DoubleCheckMark";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { ProtectionModePicker } from "./ProtectionModePicker";
 import { CategoryAccordion } from "@/components/onboarding/CategoryAccordion";
@@ -31,9 +31,9 @@ export function DoubleCheckSettingsPage() {
         <div className="flex items-center gap-3 px-3.5 py-3">
           <span
             className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-[9px]"
-            style={{ background: "linear-gradient(135deg, #8e8e93, #48484a)" }}
+            style={{ background: "rgba(52,199,89,0.15)" }}
           >
-            <ShieldCheck size={17} color="#fff" strokeWidth={2.2} />
+            <DoubleCheckMark size={16} style={{ color: "#248a3d" }} />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-[15px] font-medium" style={{ color: "var(--ios-label)" }}>

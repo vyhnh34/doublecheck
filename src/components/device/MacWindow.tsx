@@ -17,13 +17,16 @@ interface MacWindowProps {
   windowTitle: string;
   sidebarItems?: MacSidebarItem[];
   onBack?: () => void;
+  /** Called when the red traffic-light dot is clicked — closes this window
+   * back to the Desktop, matching real macOS. */
+  onClose?: () => void;
   children: ReactNode;
   /** Rendered inside the laptop frame's screen area, overlaying the bottom —
    * pass a <MacDock> for routes that need the persistent app switcher. */
   dock?: ReactNode;
 }
 
-export function MacWindow({ windowTitle, sidebarItems, onBack, children, dock }: MacWindowProps) {
+export function MacWindow({ windowTitle, sidebarItems, onBack, onClose, children, dock }: MacWindowProps) {
   return (
     <MacBookFrame appName={windowTitle} dock={dock}>
       <div
@@ -36,7 +39,13 @@ export function MacWindow({ windowTitle, sidebarItems, onBack, children, dock }:
           style={{ background: "var(--mac-sidebar-bg)", borderBottom: "1px solid var(--mac-separator)" }}
         >
           <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full" style={{ background: "var(--mac-red)" }} />
+            <button
+              onClick={onClose}
+              disabled={!onClose}
+              aria-label="Close"
+              className="h-3 w-3 rounded-full disabled:cursor-default"
+              style={{ background: "var(--mac-red)" }}
+            />
             <span className="h-3 w-3 rounded-full" style={{ background: "var(--mac-yellow)" }} />
             <span className="h-3 w-3 rounded-full" style={{ background: "var(--mac-green)" }} />
           </div>

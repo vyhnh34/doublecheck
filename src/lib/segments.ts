@@ -1,6 +1,4 @@
-import type { Match } from "./detection";
-
-export const PLACEHOLDER_RE = /\[Protected(?::\s[^\]]+)?\]/g;
+import { isMatchSecured, type Match, type SecuredMatch } from "./detection";
 
 export interface Segment {
   text: string;
@@ -8,18 +6,18 @@ export interface Segment {
   matchIndex?: number;
 }
 
-export function buildSegments(value: string, matches: Match[]): Segment[] {
-  const ranges: { start: number; end: number; kind: "detected" | "protected"; matchIndex?: number }[] = [];
-
-  matches.forEach((m, i) => ranges.push({ start: m.start, end: m.end, kind: "detected", matchIndex: i }));
-
-  const re = new RegExp(PLACEHOLDER_RE.source, "g");
-  let pm: RegExpExecArray | null;
-  while ((pm = re.exec(value))) {
-    ranges.push({ start: pm.index, end: pm.index + pm[0].length, kind: "protected" });
-  }
-
-  ranges.sort((a, b) => a.start - b.start);
+/** Splits `value` into plain/detected/secured runs. The text itself is never
+ * altered — a match renders as "protected" (secured, green) instead of
+ * "detected" (red) purely based on whether it's in `secured`. */
+export function buildSegments(value: string, matches: Match[], secured: SecuredMatch[] = []): Segment[] {
+  const ranges = matches
+    .map((m, i) => ({
+      start: m.start,
+      end: m.end,
+      kind: (isMatchSecured(m, secured) ? "protected" : "detected") as "protected" | "detected",
+      matchIndex: i,
+    }))
+    .sort((a, b) => a.start - b.start);
 
   const segments: Segment[] = [];
   let cursor = 0;
