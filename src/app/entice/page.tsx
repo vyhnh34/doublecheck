@@ -149,7 +149,7 @@ export default function EnticePage() {
   };
 
   return (
-    <main className="h-dvh overflow-hidden" style={{ background: "#000" }}>
+    <main className="h-dvh overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
       <VersionSwitcher />
       <DeviceStage
         mac={<MacDesktop onTap={handleTap} onDismiss={handleDismiss} dismissed={dismissed} />}
