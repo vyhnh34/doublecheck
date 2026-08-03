@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Wifi, Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { AppleGlyph } from "./AppleGlyph";
@@ -16,6 +18,8 @@ interface MacBookFrameProps {
 }
 
 export function MacBookFrame({ children, appName = "Finder", fillScreen = false, dock }: MacBookFrameProps) {
+  const [dockVisible, setDockVisible] = useState(false);
+
   return (
     <div className="mx-auto w-full" style={{ maxWidth: 960 }}>
       <div className="relative overflow-hidden rounded-[14px] shadow-2xl">
@@ -53,7 +57,23 @@ export function MacBookFrame({ children, appName = "Finder", fillScreen = false,
           >
             {children}
           </div>
-          {dock && <div className="absolute inset-y-0 right-3 z-30 flex items-center">{dock}</div>}
+          {dock && (
+            <div
+              className="absolute inset-y-0 right-0 z-30 flex items-center justify-end"
+              style={{ width: 110 }}
+              onMouseEnter={() => setDockVisible(true)}
+              onMouseLeave={() => setDockVisible(false)}
+            >
+              <motion.div
+                className="mr-3"
+                initial={false}
+                animate={{ x: dockVisible ? 0 : 90, opacity: dockVisible ? 1 : 0 }}
+                transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              >
+                {dock}
+              </motion.div>
+            </div>
+          )}
         </div>
       </div>
     </div>
