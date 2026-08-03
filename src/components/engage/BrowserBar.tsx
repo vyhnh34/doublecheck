@@ -15,6 +15,7 @@ export function BrowserBar({
   submittedQuery,
   submittedSecured,
   onMatchClick,
+  revealProtected,
 }: {
   draft: string;
   secured?: SecuredMatch[];
@@ -23,9 +24,21 @@ export function BrowserBar({
   submittedQuery: string | null;
   submittedSecured?: SecuredMatch[];
   onMatchClick: (match: Match, rect: DOMRect) => void;
+  /** Auto-protect only: while the DoubleCheck keyboard key is held, show the
+   * draft's matches as green protected highlights. */
+  revealProtected?: boolean;
 }) {
-  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
-  const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
+  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed, protectionMode } = useDoubleCheck();
+  const detected = featureOn ? detect(draft, selectedSubItemIds) : [];
+  // Auto-protect keeps the draft clean while typing: no highlights at all
+  // unless the DoubleCheck key is held, which reveals everything as protected.
+  const autoMode = protectionMode === "auto" && featureOn;
+  const matches = autoMode && !revealProtected ? [] : detected;
+  const inputSecured = autoMode
+    ? revealProtected
+      ? detected.map(({ start, end, text }) => ({ start, end, text }))
+      : []
+    : secured;
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden" style={{ background: "var(--ios-background)" }}>
@@ -40,7 +53,7 @@ export function BrowserBar({
               value={draft}
               onChange={onDraftChange}
               matches={matches}
-              secured={secured}
+              secured={inputSecured}
               onMatchClick={onMatchClick}
               onSubmit={onSubmit}
               placeholder="Search or enter website name"

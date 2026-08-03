@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Signal, Wifi, BatteryFull, X, Lock } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
+import { MacBookFrame } from "@/components/device/MacBookFrame";
 import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { useState } from "react";
 
@@ -118,22 +119,16 @@ function IPhoneLockScreen({ onTap, onDismiss, dismissed }: { onTap: () => void; 
 
 function MacDesktop({ onTap, onDismiss, dismissed }: { onTap: () => void; onDismiss: () => void; dismissed: boolean }) {
   return (
-    <div
-      className="relative mx-auto flex h-[620px] w-full max-w-[880px] flex-col overflow-hidden rounded-[10px] border shadow-2xl"
-      style={{
-        borderColor: "var(--mac-separator)",
-        background: "linear-gradient(160deg, #4c6a92 0%, #26374f 60%, #131c2b 100%)",
-      }}
-    >
-      <div className="flex h-8 items-center justify-between px-4 text-[13px] font-medium text-white/90">
-        <span />
-        <span>Fri Aug 1 9:41 AM</span>
+    <MacBookFrame appName="Finder" fillScreen>
+      <div
+        className="relative h-full w-full"
+        style={{ background: "linear-gradient(160deg, #4c6a92 0%, #26374f 55%, #131c2b 100%)" }}
+      >
+        <div className="absolute right-4 top-3 w-[330px]">
+          {!dismissed && <NotificationBanner onTap={onTap} onDismiss={onDismiss} variant="mac" />}
+        </div>
       </div>
-
-      <div className="absolute right-4 top-10 w-[330px]">
-        {!dismissed && <NotificationBanner onTap={onTap} onDismiss={onDismiss} variant="mac" />}
-      </div>
-    </div>
+    </MacBookFrame>
   );
 }
 

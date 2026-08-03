@@ -67,6 +67,7 @@ export function AIChatScreen({
   onSend,
   onMatchClick,
   isTyping,
+  revealProtected,
 }: {
   productTheme: ProductTheme;
   appName: string;
@@ -79,9 +80,21 @@ export function AIChatScreen({
   onSend: () => void;
   onMatchClick: (match: Match, rect: DOMRect) => void;
   isTyping?: boolean;
+  /** Auto-protect only: while the DoubleCheck keyboard key is held, show the
+   * draft's matches as green protected highlights. */
+  revealProtected?: boolean;
 }) {
-  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
-  const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
+  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed, protectionMode } = useDoubleCheck();
+  const detected = featureOn ? detect(draft, selectedSubItemIds) : [];
+  // Auto-protect keeps the draft clean while typing: no highlights at all
+  // unless the DoubleCheck key is held, which reveals everything as protected.
+  const autoMode = protectionMode === "auto" && featureOn;
+  const matches = autoMode && !revealProtected ? [] : detected;
+  const inputSecured = autoMode
+    ? revealProtected
+      ? detected.map(({ start, end, text }) => ({ start, end, text }))
+      : []
+    : secured;
 
   const t = THEME_TOKENS[productTheme];
   const Mark = productTheme === "claude" ? ClaudeMark : ChatGPTMark;
@@ -148,7 +161,7 @@ export function AIChatScreen({
             value={draft}
             onChange={onDraftChange}
             matches={matches}
-            secured={secured}
+            secured={inputSecured}
             onMatchClick={onMatchClick}
             onSubmit={onSend}
             placeholder={`Message ${appName}`}

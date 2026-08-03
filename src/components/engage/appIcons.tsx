@@ -25,7 +25,7 @@ export function AppIcon({ appId, size = 58 }: { appId: string; size?: number }) 
   if (app.iconImage) {
     return (
       <span className="relative grid flex-shrink-0 place-items-center overflow-hidden" style={tileStyle}>
-        <Image src={app.iconImage} alt={app.name} width={size} height={size} className="h-full w-full object-cover" />
+        <Image src={app.iconImage} alt={app.name} width={size} height={size} draggable={false} className="h-full w-full object-cover" />
       </span>
     );
   }

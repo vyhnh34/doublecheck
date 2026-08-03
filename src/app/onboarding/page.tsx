@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { Undo2 } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
+import { DoubleCheckMark } from "@/components/icons/DoubleCheckMark";
 import { DeviceStage } from "@/components/device/DeviceStage";
 import { VersionSwitcher } from "@/components/device/VersionSwitcher";
 import { MacWindow } from "@/components/device/MacWindow";
 import { IPhoneShell } from "@/components/device/IPhoneShell";
 import { CategoryAccordion, InfoNote } from "@/components/onboarding/CategoryAccordion";
+import { AutoProtectKeyboardPreview } from "@/components/onboarding/AutoProtectKeyboardPreview";
 import { ProtectionModePicker } from "@/components/settings/ProtectionModePicker";
 
 const TOTAL_STEPS = 3;
@@ -105,16 +108,26 @@ function Step1Explain() {
               My name is{" "}
               <span
                 className="rounded-[3px] px-0.5"
-                style={{ background: "rgba(52,199,89,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-green)" }}
+                style={{
+                  background: "rgba(52,199,89,0.16)",
+                  boxShadow: "inset 0 -1.5px 0 var(--ios-green)",
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                  fontSize: "13px",
+                }}
               >
-                Protected
+                x7Kq
               </span>{" "}
               and I live in{" "}
               <span
                 className="rounded-[3px] px-0.5"
-                style={{ background: "rgba(52,199,89,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-green)" }}
+                style={{
+                  background: "rgba(52,199,89,0.16)",
+                  boxShadow: "inset 0 -1.5px 0 var(--ios-green)",
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                  fontSize: "13px",
+                }}
               >
-                Protected
+                q3v#L9z
               </span>
               .
             </motion.p>
@@ -130,33 +143,107 @@ function Step1Explain() {
   );
 }
 
-function Step3LiveExplainer() {
-  return (
-    <div className="flex flex-col items-center px-6 pt-8 text-center">
-      <h1 className="text-[22px] font-bold" style={{ color: "var(--ios-label)" }}>
-        Here&apos;s what happens live
-      </h1>
-      <p className="mt-2 max-w-[300px] text-[15px] leading-snug" style={{ color: "var(--ios-label-secondary)" }}>
-        Tap a highlight to protect it.
-      </p>
+/** A live miniature of the real review-mode flow: tap the red highlight, then
+ * hit the DoubleCheck button in the popover to secure it — same visuals and
+ * steps as DetectedPopover/SecuredPopover in the actual prototype. */
+function ReviewTapPreview() {
+  const [secured, setSecured] = useState(false);
+  const [popover, setPopover] = useState<null | "detected" | "secured">(null);
 
-      <div
-        className="relative mt-7 w-full max-w-[320px] overflow-visible rounded-[16px] px-4 py-3.5 text-left"
-        style={{ background: "var(--ios-fill)" }}
-      >
-        <p className="text-[14.5px] leading-relaxed" style={{ color: "var(--ios-label)" }}>
-          Call me at{" "}
-          <motion.span
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.8 }}
-            className="relative inline-block rounded-[3px] px-0.5"
-            style={{ background: "rgba(255,59,48,0.16)", boxShadow: "inset 0 -1.5px 0 var(--ios-red)" }}
+  return (
+    <div
+      className="relative w-full max-w-[320px] overflow-visible rounded-[16px] px-4 py-3.5 text-left"
+      style={{ background: "var(--ios-fill)" }}
+    >
+      {popover && <div className="fixed inset-0 z-40" onClick={() => setPopover(null)} />}
+
+      <div className="text-[14.5px] leading-relaxed" style={{ color: "var(--ios-label)" }}>
+        Call me at{" "}
+        <span className="relative inline-block">
+          <motion.button
+            onClick={() => setPopover(secured ? "secured" : "detected")}
+            animate={secured || popover ? { scale: 1 } : { scale: [1, 1.05, 1] }}
+            transition={
+              secured || popover ? { duration: 0.15 } : { duration: 1.6, repeat: Infinity, repeatDelay: 0.8 }
+            }
+            className="inline-block cursor-pointer rounded-[3px] px-0.5"
+            style={{
+              font: "inherit",
+              color: "var(--ios-label)",
+              background: secured ? "rgba(52,199,89,0.16)" : "rgba(255,59,48,0.16)",
+              boxShadow: secured ? "inset 0 -1.5px 0 var(--ios-green)" : "inset 0 -1.5px 0 var(--ios-red)",
+              transition: "background 0.2s ease, box-shadow 0.2s ease",
+            }}
           >
             206-555-0117
-          </motion.span>{" "}
-          tomorrow.
-        </p>
+          </motion.button>
 
+          <AnimatePresence>
+            {popover && (
+              <motion.div
+                key={popover}
+                initial={{ opacity: 0, scale: 0.94, y: -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.14, ease: "easeOut" }}
+                className="absolute left-1/2 top-full z-50 mt-2 flex -translate-x-1/2 items-center gap-2.5 rounded-[10px] border px-3 py-2"
+                style={{
+                  width: 150,
+                  background: "var(--ios-card)",
+                  borderColor: "var(--ios-separator)",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)",
+                }}
+              >
+                <div
+                  className="absolute -top-[5px] left-1/2 h-2.5 w-2.5 -translate-x-1/2 rotate-45"
+                  style={{
+                    background: "var(--ios-card)",
+                    borderLeft: "1px solid var(--ios-separator)",
+                    borderTop: "1px solid var(--ios-separator)",
+                  }}
+                />
+                {popover === "detected" ? (
+                  <>
+                    <span className="flex-1 truncate text-[14px] font-medium" style={{ color: "var(--ios-label)" }}>
+                      Phone number
+                    </span>
+                    <button
+                      onClick={() => {
+                        setSecured(true);
+                        setPopover(null);
+                      }}
+                      aria-label="Protect"
+                      className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-full transition-transform active:scale-90"
+                      style={{ background: "linear-gradient(135deg, #8e8e93, #48484a)" }}
+                    >
+                      <DoubleCheckMark size={13} className="text-white" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex-1 truncate text-[14px] font-medium" style={{ color: "var(--ios-label)" }}>
+                      Secured
+                    </span>
+                    <button
+                      onClick={() => {
+                        setSecured(false);
+                        setPopover(null);
+                      }}
+                      aria-label="Undo"
+                      className="flex-shrink-0 transition-transform active:scale-90"
+                    >
+                      <Undo2 size={16} strokeWidth={2.2} style={{ color: "var(--ios-label-secondary)" }} />
+                    </button>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </span>{" "}
+        tomorrow.
+      </div>
+
+      {!secured && !popover && (
         <motion.div
           animate={{ y: [0, 3, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 0.8 }}
@@ -165,13 +252,45 @@ function Step3LiveExplainer() {
         >
           Tap to protect
         </motion.div>
+      )}
+    </div>
+  );
+}
+
+function Step3LiveExplainer() {
+  const { protectionMode } = useDoubleCheck();
+
+  return (
+    <div className="flex flex-col items-center px-6 pt-8 text-center">
+      <h1 className="text-[22px] font-bold" style={{ color: "var(--ios-label)" }}>
+        Here&apos;s what happens live
+      </h1>
+      <p className="mt-2 max-w-[300px] text-[15px] leading-snug" style={{ color: "var(--ios-label-secondary)" }}>
+        {protectionMode === "review"
+          ? "Tap a highlight to protect it."
+          : "Protects quietly as you type."}
+      </p>
+
+      <div className="mt-7 flex w-full justify-center">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={protectionMode}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className="flex w-full justify-center"
+          >
+            {protectionMode === "review" ? <ReviewTapPreview /> : <AutoProtectKeyboardPreview />}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <InfoNote>Everything is scanned on-device.</InfoNote>
 
       <div className="mt-6 w-full max-w-[320px] text-left">
         <h2 className="mb-2 px-1 text-[13px] font-semibold uppercase tracking-wide" style={{ color: "var(--ios-label-secondary)" }}>
-          How should DoubleCheck protect you?
+          How should it protect you?
         </h2>
         <ProtectionModePicker />
       </div>
