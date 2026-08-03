@@ -32,7 +32,9 @@ const LIVE_PATTERNS: Partial<Record<string, PatternConfig[]>> = {
   "card-number": [{ pattern: /\b(?:\d[ -]?){13,16}\b/gd }],
   zip: [{ pattern: /\b\d{5}\b/gd }],
   "home-address": [
-    { pattern: new RegExp(`\\b\\d{1,5}\\s+(?:[A-Z][a-zA-Z']*\\s?){1,4}${STREET_SUFFIX}\\.?\\b`, "gd") },
+    // Street suffix ("St", "Ave", ...) is optional — casual typing ("1743
+    // Harrison") drops it as often as it includes it ("1743 Harrison St").
+    { pattern: new RegExp(`\\b\\d{1,5}\\s+(?:[A-Z][a-zA-Z']*\\s?){1,4}(?:${STREET_SUFFIX}\\.?)?\\b`, "gd") },
   ],
   "full-name": [
     // "my name is Sam", "I'm Sam" — trigger phrase, then a capitalized name.
@@ -41,6 +43,8 @@ const LIVE_PATTERNS: Partial<Record<string, PatternConfig[]>> = {
     { pattern: /\b(?:[Mm]y name is|[Ii]'?m|[Ii] am|[Nn]ame'?s)\s+([A-Z][a-zA-Z]*)\b/gd, group: 1 },
     // "Sam is ...", "Sam lives ..." — capitalized subject before a common verb.
     { pattern: new RegExp(`\\b(?!${NAME_STOPWORDS}\\b)([A-Z][a-z]{1,15})\\s+(?:is|was|lives?|works?|called)\\b`, "gd"), group: 1 },
+    // "Hey Sam!", "Hi Alex," — a name directly addressed in a greeting.
+    { pattern: /\b(?:Hey|Hi|Hello|Dear)[,]?\s+([A-Z][a-zA-Z]{1,15})\b/gd, group: 1 },
   ],
 };
 
