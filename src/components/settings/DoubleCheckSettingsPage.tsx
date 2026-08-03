@@ -31,9 +31,9 @@ export function DoubleCheckSettingsPage() {
         <div className="flex items-start gap-3 px-3.5 py-3">
           <span
             className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-[9px]"
-            style={{ background: "linear-gradient(135deg, rgba(52,199,89,0.28), rgba(52,199,89,0.1))" }}
+            style={{ background: "linear-gradient(135deg, #34c759, #248a3d)" }}
           >
-            <DoubleCheckMark size={16} style={{ color: "#248a3d" }} />
+            <DoubleCheckMark size={16} style={{ color: "#fff" }} />
           </span>
           <span className="min-w-0 flex-1 pt-0.5">
             <span className="block text-[15px] font-medium leading-tight" style={{ color: "var(--ios-label)" }}>

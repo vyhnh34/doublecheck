@@ -33,8 +33,8 @@ function PrivacySecurityDetail({ onOpenDoubleCheck }: { onOpenDoubleCheck: () =>
 
       <SettingsGroup>
         <SettingsRow
-          icon={<DoubleCheckMark size={16} style={{ color: "#248a3d" }} />}
-          iconBg="linear-gradient(135deg, rgba(52,199,89,0.28), rgba(52,199,89,0.1))"
+          icon={<DoubleCheckMark size={16} style={{ color: "#fff" }} />}
+          iconBg="linear-gradient(135deg, #34c759, #248a3d)"
           title="DoubleCheck"
           subtitle="Protect sensitive info as you type"
           isNew
