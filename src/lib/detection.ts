@@ -1,5 +1,4 @@
 import { CATEGORIES, type CategoryId } from "@/data/categories";
-import { CITY_NAMES, CITY_ABBREVIATIONS } from "@/data/cities";
 
 export interface Match {
   start: number;
@@ -23,19 +22,6 @@ const STREET_SUFFIX =
 const NAME_STOPWORDS =
   "(?:It|This|That|He|She|They|We|You|There|Here|I|What|Who|When|Where|Why|How|My|Your|Our|His|Her|Their)";
 
-const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-// Longest-first so "New York City" wins over "New York" inside the alternation.
-const CITY_NAME_PATTERN = new RegExp(
-  `\\b(?:${[...CITY_NAMES]
-    .sort((a, b) => b.length - a.length)
-    .map(escapeRegExp)
-    .join("|")})\\b`,
-  "gid"
-);
-// Case-sensitive on purpose: "SF" flags, but "sf"/"la" inside ordinary words don't.
-const CITY_ABBR_PATTERN = new RegExp(`\\b(?:${CITY_ABBREVIATIONS.join("|")})\\b`, "gd");
-
 /** A few live patterns layered on top of the sample keyword lists, so typing
  * realistic-looking values (not just the scripted examples) still lights up.
  * These are heuristics for a demo, not real NLP — good enough to show the
@@ -45,7 +31,6 @@ const LIVE_PATTERNS: Partial<Record<string, PatternConfig[]>> = {
   phone: [{ pattern: /\b(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/gd }],
   "card-number": [{ pattern: /\b(?:\d[ -]?){13,16}\b/gd }],
   zip: [{ pattern: /\b\d{5}\b/gd }],
-  city: [{ pattern: CITY_NAME_PATTERN }, { pattern: CITY_ABBR_PATTERN }],
   "home-address": [
     // Street suffix ("St", "Ave", ...) is optional — casual typing ("1743
     // Harrison") drops it as often as it includes it ("1743 Harrison St").

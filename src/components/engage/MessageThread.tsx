@@ -27,9 +27,6 @@ interface MessageThreadProps {
   onMatchClick: (match: Match, rect: DOMRect) => void;
   isTyping?: boolean;
   emptyStateText?: string;
-  /** Auto-protect only: while the DoubleCheck keyboard key is held, show the
-   * draft's matches as green protected highlights. */
-  revealProtected?: boolean;
 }
 
 export function MessageThread({
@@ -43,19 +40,9 @@ export function MessageThread({
   onMatchClick,
   isTyping,
   emptyStateText,
-  revealProtected,
 }: MessageThreadProps) {
-  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed, protectionMode } = useDoubleCheck();
-  const detected = featureOn ? detect(draft, selectedSubItemIds) : [];
-  // Auto-protect keeps the draft clean while typing: no highlights at all
-  // unless the DoubleCheck key is held, which reveals everything as protected.
-  const autoMode = protectionMode === "auto" && featureOn;
-  const matches = autoMode && !revealProtected ? [] : detected;
-  const inputSecured = autoMode
-    ? revealProtected
-      ? detected.map(({ start, end, text }) => ({ start, end, text }))
-      : []
-    : secured;
+  const { featureOn, selectedSubItemIds, legendDismissed, setLegendDismissed } = useDoubleCheck();
+  const matches = featureOn ? detect(draft, selectedSubItemIds) : [];
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden" style={{ background: "var(--ios-background-secondary)" }}>
@@ -119,7 +106,7 @@ export function MessageThread({
               value={draft}
               onChange={onDraftChange}
               matches={matches}
-              secured={inputSecured}
+              secured={secured}
               onMatchClick={onMatchClick}
               onSubmit={onSend}
               placeholder="Message"

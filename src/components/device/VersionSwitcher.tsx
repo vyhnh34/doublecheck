@@ -28,9 +28,7 @@ export function VersionSwitcher() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Prototype controls"
-        // bottom-[72px] keeps clear of the Next.js dev-tools badge that
-        // occupies the bottom-left corner in dev.
-        className="fixed bottom-[72px] left-4 z-50 grid h-11 w-11 place-items-center rounded-full border shadow-lg backdrop-blur-xl transition-transform active:scale-95"
+        className="fixed bottom-4 left-4 z-50 grid h-11 w-11 place-items-center rounded-full border shadow-lg backdrop-blur-xl transition-transform active:scale-95"
         style={{
           background: "color-mix(in srgb, var(--ios-card) 90%, transparent)",
           borderColor: "var(--ios-separator)",
@@ -49,7 +47,7 @@ export function VersionSwitcher() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 4 }}
               transition={{ duration: 0.14, ease: "easeOut" }}
-              className="fixed bottom-[126px] left-4 z-50 w-[220px] rounded-[16px] border p-3 shadow-2xl"
+              className="fixed bottom-[70px] left-4 z-50 w-[220px] rounded-[16px] border p-3 shadow-2xl"
               style={{ background: "var(--ios-card)", borderColor: "var(--ios-separator)" }}
             >
               <SectionLabel>Device</SectionLabel>

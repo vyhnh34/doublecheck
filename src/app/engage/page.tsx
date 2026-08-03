@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useDoubleCheck } from "@/context/DoubleCheckProvider";
 import { DeviceStage } from "@/components/device/DeviceStage";
@@ -17,9 +16,6 @@ import { AIChatScreen } from "@/components/engage/AIChatScreen";
 import { BrowserBar } from "@/components/engage/BrowserBar";
 import { DetectedPopover } from "@/components/engage/DetectedPopover";
 import { SecuredPopover } from "@/components/engage/SecuredPopover";
-import { SimulatedKeyboard } from "@/components/engage/SimulatedKeyboard";
-import { FloatingDoubleCheck } from "@/components/engage/FloatingDoubleCheck";
-import { UpdateNotification } from "@/components/engage/UpdateNotification";
 import { APPS } from "@/data/apps";
 import { detect, isMatchSecured, type Match, type SecuredMatch } from "@/lib/detection";
 
@@ -60,8 +56,7 @@ function trimWithSecured(text: string, secured: SecuredMatch[]): { text: string;
 
 export default function EngagePage() {
   const router = useRouter();
-  const { enticeDismissedOnce, setEnticeDismissedOnce, featureOn, selectedSubItemIds, protectionMode, resetOnboarding } =
-    useDoubleCheck();
+  const { enticeDismissedOnce, setEnticeDismissedOnce, featureOn, selectedSubItemIds, protectionMode } = useDoubleCheck();
 
   const [view, setView] = useState<View>("home");
   const [threads, setThreads] = useState<Record<ChatAppId, ThreadState>>({
@@ -78,19 +73,6 @@ export default function EngagePage() {
   const [activeMatchSecured, setActiveMatchSecured] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showReminder, setShowReminder] = useState(enticeDismissedOnce);
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const [macInputFocused, setMacInputFocused] = useState(false);
-  const [revealProtected, setRevealProtected] = useState(false);
-  const [ncOpen, setNcOpen] = useState(false);
-
-  // Leaving a screen dismisses the simulated keyboard and Notification
-  // Center, like iOS.
-  useEffect(() => {
-    setKeyboardOpen(false);
-    setMacInputFocused(false);
-    setRevealProtected(false);
-    setNcOpen(false);
-  }, [view]);
 
   const isChatApp = (v: View): v is ChatAppId => v === "messages" || v === "claude" || v === "chatgpt";
 
@@ -248,7 +230,6 @@ export default function EngagePage() {
             onSend={() => handleSend(appId)}
             onMatchClick={handleMatchClick}
             isTyping={view === appId && isTyping}
-            revealProtected={revealProtected}
           />
         </div>
       );
@@ -267,7 +248,6 @@ export default function EngagePage() {
         onSend={() => handleSend(appId)}
         onMatchClick={handleMatchClick}
         isTyping={view === appId && isTyping}
-        revealProtected={revealProtected}
       />
     );
   };
@@ -281,7 +261,6 @@ export default function EngagePage() {
       submittedQuery={submittedQuery}
       submittedSecured={submittedSecured}
       onMatchClick={handleMatchClick}
-      revealProtected={revealProtected}
     />
   );
 
@@ -293,26 +272,6 @@ export default function EngagePage() {
   // the Desktop. The Dock is what switches apps; there's no "back to home"
   // button to click, and it's rendered inside the laptop's own screen area.
   const macDock = <MacDock activeId={view} onOpenApp={openApp} />;
-  // Post-entice home for the update notification: Notification Center, opened
-  // from the menu-bar clock (Mac) or by dragging down on the home screen
-  // (iPhone). Tapping it wipes the saved setup so the whole onboarding flow
-  // replays from scratch, first-run style.
-  const handleNotificationTap = () => {
-    resetOnboarding();
-    router.push("/entice");
-  };
-  const macNotifications = <UpdateNotification variant="mac" onTap={handleNotificationTap} />;
-  // The laptop counterpart of the keyboard's DoubleCheck key: a floating
-  // bubble in auto-protect mode, present only while a composer is focused —
-  // like Grammarly's widget appearing when you're in a text field.
-  const macOverlay =
-    protectionMode === "auto" && featureOn && macInputFocused ? (
-      <FloatingDoubleCheck
-        revealing={revealProtected}
-        onRevealStart={() => setRevealProtected(true)}
-        onRevealEnd={() => setRevealProtected(false)}
-      />
-    ) : undefined;
   const macDesktop = (
     <div
       className="h-full w-full"
@@ -325,31 +284,15 @@ export default function EngagePage() {
       <VersionSwitcher />
       <DeviceStage
         mac={
-          <div
-            className="w-full"
-            onFocusCapture={(e) => {
-              if (e.target instanceof HTMLTextAreaElement) setMacInputFocused(true);
-            }}
-            onBlurCapture={(e) => {
-              if (e.target instanceof HTMLTextAreaElement) setMacInputFocused(false);
-            }}
-          >
-            {view === "home" ? (
-              <MacBookFrame appName="Finder" fillScreen dock={macDock} overlay={macOverlay} notifications={macNotifications}>
-                {macDesktop}
-              </MacBookFrame>
-            ) : (
-              <MacWindow
-                windowTitle={titleFor(view)}
-                dock={macDock}
-                onClose={() => setView("home")}
-                overlay={macOverlay}
-                notifications={macNotifications}
-              >
-                {contentFor()}
-              </MacWindow>
-            )}
-          </div>
+          view === "home" ? (
+            <MacBookFrame appName="Finder" fillScreen dock={macDock}>
+              {macDesktop}
+            </MacBookFrame>
+          ) : (
+            <MacWindow windowTitle={titleFor(view)} dock={macDock} onClose={() => setView("home")}>
+              {contentFor()}
+            </MacWindow>
+          )
         }
         iphone={
           <IPhoneShell
@@ -359,49 +302,8 @@ export default function EngagePage() {
             hideTitleBar={view === "home"}
             fullBleed={view === "home"}
             statusBarTint={view === "home" ? "light" : "dark"}
-            onPullDown={view === "home" ? () => setNcOpen(true) : undefined}
           >
-            <div
-              className="relative flex h-full flex-col"
-              onFocusCapture={(e) => {
-                if (e.target instanceof HTMLTextAreaElement && view !== "home") setKeyboardOpen(true);
-              }}
-            >
-              <div className="min-h-0 flex-1">{contentFor()}</div>
-              <AnimatePresence>
-                {ncOpen && view === "home" && (
-                  <motion.div
-                    key="notification-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={() => setNcOpen(false)}
-                    onPanEnd={(_, info) => {
-                      if (info.offset.y < -50) setNcOpen(false);
-                    }}
-                    className="absolute inset-0 z-30 touch-none px-3 pt-20"
-                    style={{ background: "rgba(10,14,24,0.55)", backdropFilter: "blur(22px)" }}
-                  >
-                    <p className="mb-3 text-center text-[13px] font-medium text-white/65">Notification Center</p>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <UpdateNotification variant="ios" onTap={handleNotificationTap} />
-                    </div>
-                    <p className="mt-5 text-center text-[11.5px] text-white/40">Swipe up or tap to dismiss</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {keyboardOpen && view !== "home" && (
-                  <SimulatedKeyboard
-                    showDoubleCheckKey={protectionMode === "auto" && featureOn}
-                    revealing={revealProtected}
-                    onRevealStart={() => setRevealProtected(true)}
-                    onRevealEnd={() => setRevealProtected(false)}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
+            {contentFor()}
           </IPhoneShell>
         }
       />

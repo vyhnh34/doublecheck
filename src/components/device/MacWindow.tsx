@@ -24,15 +24,11 @@ interface MacWindowProps {
   /** Rendered inside the laptop frame's screen area, overlaying the bottom —
    * pass a <MacDock> for routes that need the persistent app switcher. */
   dock?: ReactNode;
-  /** Floating screen-level widgets, passed through to the laptop frame. */
-  overlay?: ReactNode;
-  /** Notification Center content, passed through to the laptop frame. */
-  notifications?: ReactNode;
 }
 
-export function MacWindow({ windowTitle, sidebarItems, onBack, onClose, children, dock, overlay, notifications }: MacWindowProps) {
+export function MacWindow({ windowTitle, sidebarItems, onBack, onClose, children, dock }: MacWindowProps) {
   return (
-    <MacBookFrame appName={windowTitle} dock={dock} overlay={overlay} notifications={notifications}>
+    <MacBookFrame appName={windowTitle} dock={dock}>
       <div
         className="flex w-full max-w-[880px] flex-col overflow-hidden rounded-[10px] border shadow-2xl"
         style={{ borderColor: "var(--mac-separator)", height: 620 }}

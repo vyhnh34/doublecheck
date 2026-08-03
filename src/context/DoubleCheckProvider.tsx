@@ -44,10 +44,6 @@ interface DoubleCheckContextValue extends PersistedState {
   setDeviceMode: (mode: DeviceMode) => void;
   reorderCategories: (order: string[]) => void;
   orderedCategories: typeof CATEGORIES;
-  /** Wipes all setup state (mode, selections, onboarding progress) back to the
-   * first-run defaults — keeps only the device choice. Used by the Software
-   * Update notification so the onboarding flow can be replayed from scratch. */
-  resetOnboarding: () => void;
 }
 
 const ALL_SUB_ITEM_IDS = CATEGORIES.flatMap((c) => c.subItems.map((s) => s.id));
@@ -173,10 +169,6 @@ export function DoubleCheckProvider({ children }: { children: ReactNode }) {
     (order: string[]) => setState((s) => ({ ...s, categoryOrder: order })),
     []
   );
-  const resetOnboarding = useCallback(
-    () => setState((s) => ({ ...DEFAULT_STATE, deviceMode: s.deviceMode })),
-    []
-  );
 
   const orderedCategories = useMemo(() => {
     const byId = new Map(CATEGORIES.map((c) => [c.id, c]));
@@ -205,7 +197,6 @@ export function DoubleCheckProvider({ children }: { children: ReactNode }) {
     setDeviceMode,
     reorderCategories,
     orderedCategories,
-    resetOnboarding,
   };
 
   return <DoubleCheckContext.Provider value={value}>{children}</DoubleCheckContext.Provider>;

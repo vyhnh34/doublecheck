@@ -22,9 +22,6 @@ interface IPhoneShellProps {
   fullBleed?: boolean;
   /** Status bar icon/text tint — "light" reads over a dark wallpaper. */
   statusBarTint?: "dark" | "light";
-  /** When set, dragging down anywhere on the screen (status bar included)
-   * fires this — used to open Notification Center, like iOS. */
-  onPullDown?: () => void;
 }
 
 const DRAG_RANGE = 120;
@@ -54,7 +51,6 @@ export function IPhoneShell({
   hideTitleBar = false,
   fullBleed = false,
   statusBarTint = "dark",
-  onPullDown,
 }: IPhoneShellProps) {
   const dragY = useMotionValue(0);
   const contentScale = useTransform(dragY, [-DRAG_RANGE, 0], [0.86, 1]);
@@ -90,14 +86,7 @@ export function IPhoneShell({
       <div className="absolute -left-[11px] top-[214px] hidden h-[52px] w-[3px] rounded-l-sm bg-[#0d0d0d] min-[900px]:block" />
       <div className="absolute -right-[11px] top-[170px] hidden h-[70px] w-[3px] rounded-r-sm bg-[#0d0d0d] min-[900px]:block" />
 
-      <motion.div
-        onPanEnd={
-          onPullDown
-            ? (_, info: PanInfo) => {
-                if (info.offset.y > 50) onPullDown();
-              }
-            : undefined
-        }
+      <div
         className="relative flex h-full w-full flex-col overflow-hidden min-[900px]:rounded-[44px]"
         style={{ background: fullBleed ? undefined : "var(--ios-background-secondary)" }}
       >
@@ -174,7 +163,7 @@ export function IPhoneShell({
             <div className="h-[5px] w-[134px] rounded-full" style={{ background: "var(--ios-label)", opacity: 0.85 }} />
           </div>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
