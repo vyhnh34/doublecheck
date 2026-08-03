@@ -51,6 +51,39 @@ const LIVE_PATTERNS: Partial<Record<string, PatternConfig[]>> = {
   ],
 };
 
+function levenshtein(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      dp[i][j] =
+        a[i - 1] === b[j - 1] ? dp[i - 1][j - 1] : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+const WORD_RE = /[A-Za-z']+/g;
+
+/** Tolerates a small typo (one dropped/swapped letter, two for longer words)
+ * in a single-word keyword — "insomia" still flags for "insomnia" — without
+ * turning every multi-word phrase/number keyword fuzzy too. */
+function findFuzzyWordMatch(text: string, keyword: string): { start: number; end: number; text: string } | null {
+  const maxDist = keyword.length <= 6 ? 1 : 2;
+  const lowerKeyword = keyword.toLowerCase();
+  WORD_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = WORD_RE.exec(text))) {
+    const word = m[0];
+    if (Math.abs(word.length - keyword.length) > maxDist) continue;
+    if (levenshtein(word.toLowerCase(), lowerKeyword) <= maxDist) {
+      return { start: m.index, end: m.index + word.length, text: word };
+    }
+  }
+  return null;
+}
+
 function extractSpan(match: RegExpExecArray, group?: number): { start: number; end: number; text: string } | null {
   if (!group) {
     return { start: match.index, end: match.index + match[0].length, text: match[0] };
@@ -99,11 +132,15 @@ export function detect(text: string, selectedSubItemIds: Set<string>): Match[] {
 
       for (const keyword of subItem.keywords) {
         const idx = text.toLowerCase().indexOf(keyword.toLowerCase());
-        if (idx === -1) continue;
+        const span =
+          idx !== -1
+            ? { start: idx, end: idx + keyword.length, text: text.slice(idx, idx + keyword.length) }
+            : !keyword.includes(" ") && keyword.length >= 5
+              ? findFuzzyWordMatch(text, keyword)
+              : null;
+        if (!span) continue;
         matches.push({
-          start: idx,
-          end: idx + keyword.length,
-          text: text.slice(idx, idx + keyword.length),
+          ...span,
           categoryId: category.id,
           categoryLabel: category.label,
           subItemId: subItem.id,
