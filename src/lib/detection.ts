@@ -45,6 +45,9 @@ const LIVE_PATTERNS: Partial<Record<string, PatternConfig[]>> = {
     { pattern: new RegExp(`\\b(?!${NAME_STOPWORDS}\\b)([A-Z][a-z]{1,15})\\s+(?:is|was|lives?|works?|called)\\b`, "gd"), group: 1 },
     // "Hey Sam!", "Hi Alex," — a name directly addressed in a greeting.
     { pattern: /\b(?:Hey|Hi|Hello|Dear)[,]?\s+([A-Z][a-zA-Z]{1,15})\b/gd, group: 1 },
+    // "David, my doctor" — a name immediately followed by an appositive
+    // ("X, my ___") introducing who they are.
+    { pattern: /\b([A-Z][a-z]{1,15}),\s+my\b/gd, group: 1 },
   ],
 };
 

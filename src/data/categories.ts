@@ -50,7 +50,7 @@ export const CATEGORIES: Category[] = [
     label: "Health",
     description: "Conditions, meds, mental health",
     subItems: [
-      { id: "condition", label: "Condition", keywords: ["diabetes", "asthma"] },
+      { id: "condition", label: "Condition", keywords: ["diabetes", "asthma", "insomnia", "migraines", "chronic pain"] },
       { id: "medication", label: "Medication", keywords: ["metformin", "sertraline", "albuterol"] },
       { id: "mental-health", label: "Mental health", keywords: ["my anxiety", "my therapist", "panic attack"] },
     ],
